@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
+<link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script>(function(){try{var f=localStorage.getItem('els_font'); if(f) document.documentElement.setAttribute('data-font',f);}catch(e){}})();</script>
 <script>(function(){try{if(localStorage.getItem('els_theme')==='dark') document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <style>
 
@@ -39,6 +43,12 @@
   --chip-flat-bg:#3C3C3C; --overlay-tint:rgba(50,50,50,.78);
 }
 *{box-sizing:border-box;}
+html[data-font="pretendard"] body{font-family:'Pretendard','Malgun Gothic',sans-serif;}
+html[data-font="plex"] body{font-family:'IBM Plex Sans KR','Malgun Gothic',sans-serif;}
+html[data-font="noto"] body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;}
+html[data-font="nanum"] body{font-family:'Nanum Gothic','나눔고딕','NanumGothic','Malgun Gothic',sans-serif;}
+html[data-font="maruburi"] body{font-family:'MaruBuri','Nanum Myeongjo','Batang',serif;}
+#fontSelect{border:1px solid var(--line); border-radius:100px; padding:5px 10px; margin-bottom:8px; font-size:12px; font-family:inherit; color:var(--ink-soft); background:var(--card); cursor:pointer;}
 html,body{margin:0;padding:0;}
 body{background:var(--paper); color:var(--ink); font-family:'Nanum Gothic','나눔고딕','NanumGothic','Malgun Gothic',sans-serif; min-height:100vh; padding:32px 22px 64px; letter-spacing:-.005em; transition:background .15s ease, color .15s ease;}
 .num{font-family:'JetBrains Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;}
@@ -441,6 +451,13 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:'NGT','NanumGothic'
         <button class="btn btn-ghost" id="pensionViewBtn" style="display:none">연금</button>
         <button class="btn btn-ghost" id="overallViewBtn" style="display:none">종합</button>
       </div>
+      <select id="fontSelect" title="글꼴 선택">
+        <option value="pretendard">1. Pretendard</option>
+        <option value="plex">2. IBM Plex Sans KR</option>
+        <option value="noto">3. Noto Sans KR</option>
+        <option value="nanum">4. 나눔고딕</option>
+        <option value="maruburi">5. 마루부리</option>
+      </select>
       <button class="btn-icon" id="themeToggle" title="다크모드 전환">🌙</button>
     </div>
   </div>
@@ -2595,6 +2612,18 @@ $('exportBtn').addEventListener('click', ()=>{
   XLSX.utils.book_append_sheet(wb, ws, 'ELS데이터');
   XLSX.writeFile(wb, `ELS포트폴리오_${new Date().toISOString().slice(0,10)}.xlsx`);
 });
+
+/* ============ 글꼴 선택 ============ */
+(function(){
+  var sel=document.getElementById('fontSelect'); if(!sel) return;
+  var cur=document.documentElement.getAttribute('data-font')||'nanum';
+  document.documentElement.setAttribute('data-font',cur);
+  sel.value=cur;
+  sel.addEventListener('change', function(){
+    document.documentElement.setAttribute('data-font',sel.value);
+    try{ localStorage.setItem('els_font',sel.value); }catch(e){}
+  });
+})();
 
 /* ============ 다크모드 토글 ============ */
 function currentTheme(){ return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
