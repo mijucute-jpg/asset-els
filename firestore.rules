@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 본인 구글 계정만 읽기/쓰기 가능 (이메일을 본인 것으로 바꾸세요. public/firebase-config.js 의 ALLOWED_EMAIL 과 같아야 합니다)
+    match /els_entries/{id} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email == "여기에_내_구글_이메일"
+        && request.auth.token.email_verified == true;
+    }
+  }
+}
