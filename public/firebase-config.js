@@ -9,4 +9,4 @@ window.FIREBASE_CONFIG = {
 /* 로그인을 허용할 구글 계정 이메일 (firestore.rules 의 이메일과 똑같이 맞추세요) */
 window.ALLOWED_EMAIL = "mijucute@gmail.com";
 /* (선택) 기초자산 시세 조회용 Cloud Function 주소. 비워 두면 시세는 표시되지 않습니다. 자세한 내용은 README 참고 */
-window.PRICE_API_URL = "";
+window.PRICE_API_URL = "https://script.google.com/macros/s/AKfycbwhXa99dETHtZVkO-vsr31kW4FCvut2aJPxh8ODDBEddLEs9jfwM-JAhHTCDXzozCwCUw/exec";
