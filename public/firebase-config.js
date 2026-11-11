@@ -7,6 +7,6 @@ window.FIREBASE_CONFIG = {
   appId: "1:145680720137:web:bb60eae1e6c13da9db73d8"
 };
 /* 로그인을 허용할 구글 계정 이메일 (firestore.rules 의 이메일과 똑같이 맞추세요) */
-window.ALLOWED_EMAIL = "여기에_내_구글_이메일";
+window.ALLOWED_EMAIL = "mijucute@gmail.com";
 /* (선택) 기초자산 시세 조회용 Cloud Function 주소. 비워 두면 시세는 표시되지 않습니다. 자세한 내용은 README 참고 */
 window.PRICE_API_URL = "";

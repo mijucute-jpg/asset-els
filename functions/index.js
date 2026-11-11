@@ -3,7 +3,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 admin.initializeApp();
 
-const ALLOWED_EMAIL = "여기에_내_구글_이메일";
+const ALLOWED_EMAIL = "mijucute@gmail.com";
 // 종목명 → 6자리 종목코드. 새 기초자산이 생기면 한 줄 추가
 const STOCK_TICKERS = { "하이닉스": "000660", "SK하이닉스": "000660", "삼성전자": "005930", "현대차": "005380" };
 const num = (s) => { if (s === null || s === undefined || s === "") return null; const n = Number(String(s).replace(/,/g, "")); return isNaN(n) ? null : n; };
