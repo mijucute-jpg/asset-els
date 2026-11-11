@@ -43,11 +43,11 @@
   --chip-flat-bg:#3C3C3C; --overlay-tint:rgba(50,50,50,.78);
 }
 *{box-sizing:border-box;}
-html[data-font="pretendard"] body{font-family:'Pretendard','Malgun Gothic',sans-serif;}
-html[data-font="plex"] body{font-family:'IBM Plex Sans KR','Malgun Gothic',sans-serif;}
-html[data-font="noto"] body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;}
-html[data-font="nanum"] body{font-family:'Nanum Gothic','나눔고딕','NanumGothic','Malgun Gothic',sans-serif;}
-html[data-font="maruburi"] body{font-family:'MaruBuri','Nanum Myeongjo','Batang',serif;}
+html{--ff:'NG','NanumGothic','Malgun Gothic',sans-serif; --ff-t:'NGT','NanumGothic','Malgun Gothic',sans-serif; --ff-r:'NGR','NanumGothic','Malgun Gothic',sans-serif;}
+html[data-font="pretendard"]{--ff:'Pretendard','Malgun Gothic',sans-serif; --ff-t:var(--ff); --ff-r:var(--ff);}
+html[data-font="plex"]{--ff:'IBM Plex Sans KR','Malgun Gothic',sans-serif; --ff-t:var(--ff); --ff-r:var(--ff);}
+html[data-font="noto"]{--ff:'Noto Sans KR','Malgun Gothic',sans-serif; --ff-t:var(--ff); --ff-r:var(--ff);}
+html[data-font="maruburi"]{--ff:'MaruBuri','Nanum Myeongjo','Batang',serif; --ff-t:var(--ff); --ff-r:var(--ff);}
 #fontSelect{border:1px solid var(--line); border-radius:100px; padding:5px 10px; margin-bottom:8px; font-size:12px; font-family:inherit; color:var(--ink-soft); background:var(--card); cursor:pointer;}
 html,body{margin:0;padding:0;}
 body{background:var(--paper); color:var(--ink); font-family:'Nanum Gothic','나눔고딕','NanumGothic','Malgun Gothic',sans-serif; min-height:100vh; padding:32px 22px 64px; letter-spacing:-.005em; transition:background .15s ease, color .15s ease;}
@@ -417,12 +417,12 @@ tbody td{background:transparent;}
 @font-face{font-family:'NGT';font-weight:100 599;src:local('NanumGothic'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothic.woff') format('woff'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothic.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'NGT';font-weight:600 799;src:local('NanumGothicBold'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothicBold.woff') format('woff'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothicBold.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'NGT';font-weight:800 900;src:local('NanumGothicExtraBold'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothicExtraBold.woff') format('woff'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothicExtraBold.ttf') format('truetype');font-display:swap}
-html body, body *, button, input, select, textarea, svg text{font-family:'NG','NanumGothic','Malgun Gothic',sans-serif !important;}
-h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:'NGT','NanumGothic','Malgun Gothic',sans-serif !important;}
+html body, body *, button, input, select, textarea, svg text{font-family:var(--ff) !important;}
+h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !important;}
 
 /* 작은 라벨·표 헤더: Light는 획이 가늘어 흐려 보여 Regular로 */
 @font-face{font-family:'NGR';font-weight:100 900;src:url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothic.woff') format('woff'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothic.ttf') format('truetype');font-display:swap}
-.stat .label,thead th,.oy-table th,.oy-table-split thead th,.cash-table th{font-family:'NGR','NanumGothic','Malgun Gothic',sans-serif !important;font-weight:400 !important;color:#6b6a63 !important}
+.stat .label,thead th,.oy-table th,.oy-table-split thead th,.cash-table th{font-family:var(--ff-r) !important;font-weight:400 !important;color:#6b6a63 !important}
 </style>
 <script src="firebase-config.js"></script>
 <script>window.fbReady = new Promise(function(res,rej){ window.__fbOk=res; window.__fbFail=rej; });</script>
