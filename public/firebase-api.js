@@ -70,10 +70,15 @@ try {
     async getStockPrices(names) {
       const url = window.PRICE_API_URL;
       if (!url) return {};
-      const token = await auth.currentUser.getIdToken();
-      const res = await fetch(url + "?names=" + encodeURIComponent((names || []).join(",")), {
-        headers: { Authorization: "Bearer " + token },
-      });
+      const q = (names || []).join(",");
+      let res;
+      if (/script\.google\.com/.test(url)) {
+        // Apps Script 웹앱: 공개 시세만 반환. 사용자 정의 헤더를 넣으면 브라우저가 막으므로 헤더 없이 호출
+        res = await fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "action=prices&names=" + encodeURIComponent(q));
+      } else {
+        const token = await auth.currentUser.getIdToken();
+        res = await fetch(url + "?names=" + encodeURIComponent(q), { headers: { Authorization: "Bearer " + token } });
+      }
       if (!res.ok) throw new Error("시세 조회 실패 " + res.status);
       return await res.json();
     },
