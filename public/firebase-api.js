@@ -71,14 +71,21 @@ try {
       const url = window.PRICE_API_URL;
       if (!url) return {};
       const q = (names || []).join(",");
-      let res;
       if (/script\.google\.com/.test(url)) {
-        // Apps Script 웹앱: 공개 시세만 반환. 사용자 정의 헤더를 넣으면 브라우저가 막으므로 헤더 없이 호출
-        res = await fetch(url + (url.indexOf("?") < 0 ? "?" : "&") + "action=prices&names=" + encodeURIComponent(q));
-      } else {
-        const token = await auth.currentUser.getIdToken();
-        res = await fetch(url + "?names=" + encodeURIComponent(q), { headers: { Authorization: "Bearer " + token } });
+        // Apps Script 웹앱: CORS 제한을 피하려고 JSONP(스크립트 태그)로 호출
+        return await new Promise((resolve, reject) => {
+          const cb = "__px" + Date.now();
+          const sc = document.createElement("script");
+          const done = () => { delete window[cb]; sc.remove(); };
+          const timer = setTimeout(() => { done(); reject(new Error("시세 조회 시간 초과")); }, 15000);
+          window[cb] = (data) => { clearTimeout(timer); done(); resolve(data || {}); };
+          sc.onerror = () => { clearTimeout(timer); done(); reject(new Error("시세 주소를 불러오지 못했습니다 (배포 권한/주소 확인)")); };
+          sc.src = url + (url.indexOf("?") < 0 ? "?" : "&") + "action=prices&callback=" + cb + "&names=" + encodeURIComponent(q);
+          document.head.appendChild(sc);
+        });
       }
+      const token = await auth.currentUser.getIdToken();
+      const res = await fetch(url + "?names=" + encodeURIComponent(q), { headers: { Authorization: "Bearer " + token } });
       if (!res.ok) throw new Error("시세 조회 실패 " + res.status);
       return await res.json();
     },
