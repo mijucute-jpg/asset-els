@@ -16,7 +16,7 @@
 <link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-<script>(function(){try{var f=localStorage.getItem('els_font'); if(f) document.documentElement.setAttribute('data-font',f);}catch(e){} var d='modern'; try{d=localStorage.getItem('els_design')||'modern';}catch(e){} var H=document.documentElement; if(['paper'].indexOf(d)>=0){H.setAttribute('data-skin',d); H.setAttribute('data-design','modern');} else H.setAttribute('data-design',d);})();</script>
+<script>(function(){try{var f=localStorage.getItem('els_font'); if(f) document.documentElement.setAttribute('data-font',f);}catch(e){} var d='modern'; try{d=localStorage.getItem('els_design')||'modern';}catch(e){} var H=document.documentElement; if(['paper','excel'].indexOf(d)>=0){H.setAttribute('data-skin',d); H.setAttribute('data-design','modern');} else H.setAttribute('data-design',d);})();</script>
 <script>(function(){try{if(localStorage.getItem('els_theme')==='dark') document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <style>
 
@@ -814,6 +814,59 @@ html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
 /* ===== 연금 탭 위쪽 CSV 줄: 작게 ===== */
 .pen-csvrow{display:flex; justify-content:flex-end; margin-bottom:4px;}
 .pen-csvrow .btn{padding:4px 12px; font-size:12px; line-height:1.3;}
+
+/* --- 엑셀: 초록 리본 + 격자 셀 + 회색 머리글 --- */
+html[data-skin="excel"]:not([data-theme="dark"]){--paper:#FFFFFF; --card:#FFFFFF; --card-strong:#FFFFFF; --card-row:#FFFFFF; --ink:#1F1F1F; --ink-soft:#444444; --ink-faint:#777777; --line:#D0D0D0; --line-soft:#E4E4E4; --teal:#217346; --teal-soft:#E2F0E8; --oy-head-bg:#F2F2F2; --oy-head-bg2:#F2F2F2; --chip-flat-bg:#EDEDED; --btn-primary-bg:#217346; --btn-primary-fg:#FFFFFF; --shadow:none;}
+html[data-skin="excel"] body, html[data-skin="excel"] button, html[data-skin="excel"] input, html[data-skin="excel"] select, html[data-skin="excel"] textarea, html[data-skin="excel"] th, html[data-skin="excel"] td{font-family:'Calibri','Malgun Gothic','맑은 고딕','Segoe UI',sans-serif !important; letter-spacing:0;}
+html[data-skin="excel"] body{font-size:13px; padding:0 0 40px !important; background-color:#fff; background-image:linear-gradient(#E6E6E6 1px,transparent 1px),linear-gradient(90deg,#E6E6E6 1px,transparent 1px); background-size:96px 24px;}
+html[data-skin="excel"] .wrap{max-width:none; padding:0 14px;}
+html[data-skin="excel"] .topbar{background:#217346; margin:0 -14px 14px; padding:8px 14px 0; border:none; align-items:flex-end; gap:10px 24px;}
+html[data-skin="excel"] .hero h1{color:#fff; font-size:15px; font-weight:700; -webkit-text-fill-color:#fff; padding-bottom:8px;}
+html[data-skin="excel"] .hero h1::before{content:'▦ '; opacity:.85;}
+html[data-skin="excel"] .hero .eyebrow{display:none;}
+html[data-skin="excel"] .topbar > div:last-child{align-items:flex-end !important; gap:8px !important;}
+html[data-skin="excel"] .viewswitch{background:transparent; border:none; padding:0; gap:2px; align-items:flex-end;}
+html[data-skin="excel"] .viewswitch .btn, html[data-skin="excel"] .viewswitch .btn.active{border:none !important; border-radius:4px 4px 0 0; background:transparent; color:#fff; padding:7px 16px; font-size:13px; font-weight:500; box-shadow:none;}
+html[data-skin="excel"] .viewswitch .btn:hover{background:rgba(255,255,255,.14);}
+html[data-skin="excel"] .viewswitch .btn.active{background:#fff !important; color:#217346 !important; font-weight:700;}
+html[data-skin="excel"] #themeToggle, html[data-skin="excel"] #fontSelect, html[data-skin="excel"] #designSelect{margin:0 0 6px !important; border:1px solid #1A5C38; background:#2B8A57; color:#fff; border-radius:3px; padding:3px 8px; font-size:12px; height:26px; box-shadow:none;}
+html[data-skin="excel"] #designSelect option, html[data-skin="excel"] #fontSelect option{color:#000; background:#fff;}
+html[data-skin="excel"] .stat, html[data-skin="excel"] .ownerYearWrap, html[data-skin="excel"] .tablewrap, html[data-skin="excel"] .toolbar, html[data-skin="excel"] .hero-net, html[data-skin="excel"] .barwrap, html[data-skin="excel"] .od-cat, html[data-skin="excel"] .m-card, html[data-skin="excel"] .m-item{background:#fff; border:1px solid #BFBFBF; border-radius:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none;}
+html[data-skin="excel"] .stats{gap:0; margin-bottom:14px;}
+html[data-skin="excel"] .stat{margin:0 -1px -1px 0; padding:6px 12px;}
+html[data-skin="excel"] .stat .label{font-size:11.5px; font-weight:600; background:#F2F2F2; margin:-6px -12px 6px; padding:4px 12px; border-bottom:1px solid #D0D0D0; color:#333;}
+html[data-skin="excel"] .stat .value{font-size:18px; font-weight:600; font-variant-numeric:tabular-nums;}
+html[data-skin="excel"] .oy-title{font-size:13px; font-weight:700; color:#217346; text-transform:none;}
+html[data-skin="excel"] .oy-title::before{display:none !important;}
+html[data-skin="excel"] .ownerYearWrap{padding:10px 12px 12px;}
+html[data-skin="excel"] table{border-collapse:collapse;}
+html[data-skin="excel"] thead th, html[data-skin="excel"] .oy-table th, html[data-skin="excel"] .oy-table-split thead tr:first-child th, html[data-skin="excel"] .oy-table-split thead tr:last-child th{background:#F2F2F2 !important; color:#222; font-weight:600; font-size:12px; border:1px solid #C8C8C8 !important; padding:5px 8px !important; text-transform:none; text-align:center;}
+html[data-skin="excel"] tbody td, html[data-skin="excel"] .oy-table td, html[data-skin="excel"] .oy-table-split td{border:1px solid #D4D4D4 !important; background:#fff !important; padding:4px 8px !important; font-size:12.5px;}
+html[data-skin="excel"] tbody tr:hover td{background:#E8F2EC !important;}
+html[data-skin="excel"] .oy-total td, html[data-skin="excel"] .oy-table-split tbody tr.oy-total td{background:#E2F0E8 !important; font-weight:700;}
+html[data-skin="excel"] .oy-scroll{border:none; border-radius:0;}
+html[data-skin="excel"] .btn, html[data-skin="excel"] .btn-icon{border-radius:2px !important; border:1px solid #ABABAB; background:#F7F7F7; color:#222; padding:5px 12px; font-size:12.5px; font-weight:500; box-shadow:none;}
+html[data-skin="excel"] .btn:hover{background:#E8F2EC; border-color:#217346;}
+html[data-skin="excel"] .btn-primary, html[data-skin="excel"] .btn.btn-primary{background:#217346; border-color:#1A5C38; color:#fff;}
+html[data-skin="excel"] .pill-btn{border-radius:2px;}
+html[data-skin="excel"] .od-toolbar .pillgroup, html[data-skin="excel"] .pillgroup{border-radius:2px; background:#F2F2F2; border:1px solid #BFBFBF; padding:0; gap:0;}
+html[data-skin="excel"] .od-toolbar .pill-btn{border-radius:0; padding:5px 12px;}
+html[data-skin="excel"] .od-toolbar .pill-btn.active, html[data-skin="excel"] .pill-btn.active{background:#217346 !important; color:#fff !important; box-shadow:none;}
+html[data-skin="excel"] .field input, html[data-skin="excel"] .field select, html[data-skin="excel"] .toolbar select, html[data-skin="excel"] .toolbar input[type=text]{border-radius:0; border:1px solid #ABABAB;}
+html[data-skin="excel"] .stab-btn{border-radius:0; border:1px solid #C8C8C8; border-bottom:none; background:#F2F2F2; top:0;}
+html[data-skin="excel"] .stab-btn.active{background:#fff; color:#217346; border-top:2px solid #217346;}
+html[data-skin="excel"] .badge, html[data-skin="excel"] .tag{border-radius:2px;}
+html[data-skin="excel"] .modal{border-radius:0; border:1px solid #217346;}
+html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
+@media(max-width:640px){
+  html[data-skin="excel"] .stat, html[data-skin="excel"] #statBar .stat, html[data-skin="excel"] .m-card, html[data-skin="excel"] .m-item, html[data-skin="excel"] .btn, html[data-skin="excel"] #themeToggle{border-radius:0 !important;}
+  html[data-skin="excel"] .stats{gap:0 !important;}
+  html[data-skin="excel"] #loanView #loanTbody tr, html[data-skin="excel"] #realEstateView tbody tr, html[data-skin="excel"] .mg-card, html[data-skin="excel"] .overlay .modal{border-radius:0 !important; box-shadow:none !important;}
+  html[data-skin="excel"] .topbar{padding:8px 10px 0; margin:0 -14px 12px;}
+  html[data-skin="excel"] .topbar .viewswitch{flex:1 1 100% !important; order:1;}
+  html[data-skin="excel"] .topbar .viewswitch .btn{padding:7px 0;}
+  html[data-skin="excel"] #designSelect, html[data-skin="excel"] #fontSelect, html[data-skin="excel"] #themeToggle{margin:0 0 8px !important;}
+}
 </style>
 </head>
 <body>
@@ -857,6 +910,7 @@ html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
         <option value="modern">🎨 모던</option>
         <option value="vivid">🎨 화려한</option>
         <option value="paper">🎨 신문</option>
+        <option value="excel">🎨 엑셀</option>
       </select>
       <select id="fontSelect" title="글꼴 선택">
         <option value="pretendard">Pretendard</option>
@@ -3105,7 +3159,7 @@ $('exportBtn').addEventListener('click', ()=>{
 /* ============ 디자인 선택 ============ */
 (function(){
   var sel=document.getElementById('designSelect'); if(!sel) return;
-  var PAL=['paper'];
+  var PAL=['paper','excel'];
   function applyDesign(v){
     var H=document.documentElement;
     if(PAL.indexOf(v)>=0){ H.setAttribute('data-skin',v); H.setAttribute('data-design','modern'); }
@@ -3164,7 +3218,7 @@ function sendPensionSkin(){
   const cs = getComputedStyle(document.documentElement);
   const names = ['--paper','--card','--card-row','--ink','--ink-soft','--ink-faint','--line','--line-soft','--teal','--teal-soft','--amber','--amber-soft','--rose','--rose-soft','--indigo','--plum','--shadow','--chip-flat-bg','--oy-head-bg','--btn-primary-bg','--btn-primary-fg','--vv1','--vv2','--vv3'];
   const vars = {}; names.forEach(n=>{ vars[n] = cs.getPropertyValue(n).trim(); });
-  w.postMessage({src:'dash', type:'skin', design: document.documentElement.getAttribute('data-design')||'modern',
+  w.postMessage({src:'dash', type:'skin', design: document.documentElement.getAttribute('data-design')||'modern', skin: document.documentElement.getAttribute('data-skin')||'',
     font: getComputedStyle(document.body).fontFamily, vars,
     links: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l=>l.href)}, '*');
 }
