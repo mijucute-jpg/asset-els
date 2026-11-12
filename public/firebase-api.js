@@ -31,7 +31,7 @@ try {
     const done = () => { delete window[cb]; sc.remove(); };
     const timer = setTimeout(() => { done(); reject(new Error("조회 시간 초과")); }, timeoutMs || 60000);
     window[cb] = (data) => { clearTimeout(timer); done(); resolve(data || {}); };
-    sc.onerror = () => { clearTimeout(timer); console.error("JSONP 실패 주소(새 탭에 붙여 넣어 응답을 확인하세요):", sc.src); done(); reject(new Error("Apps Script 주소를 불러오지 못했습니다 (배포 권한/주소 확인). 개발자도구(F12) 콘솔의 주소를 새 탭에서 열어보세요")); };
+    sc.onerror = () => { clearTimeout(timer); console.error("JSONP 실패 주소(새 탭에 붙여 넣어 응답을 확인하세요):", sc.src); try { window.prompt("[진단] 아래 주소를 전체 복사(Ctrl+C)해서 새 탭에 열어보세요", sc.src); } catch (e) {} done(); reject(new Error("Apps Script 주소를 불러오지 못했습니다 (배포 권한/주소 확인). 개발자도구(F12) 콘솔의 주소를 새 탭에서 열어보세요")); };
     const q = Object.keys(params).map((k) => k + "=" + encodeURIComponent(params[k])).join("&");
     sc.src = base + (base.indexOf("?") < 0 ? "?" : "&") + q + "&callback=" + cb;
     document.head.appendChild(sc);
