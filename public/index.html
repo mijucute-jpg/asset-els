@@ -892,6 +892,7 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
 }
 
 /* ===== 엑셀 디자인 보강: 모양 통일 + 밝은 차트 색 + 다크모드 ===== */
+html:not([data-theme="dark"]){--c-teal:#459E67; --c-indigo:#EBB038; --c-plum:#4B7AAB; --c-amber:#DD805F; --c-sky:#8A72AE; --c-rose:#CE7086;}
 html[data-skin="excel"]{--c-teal:#459E67; --c-indigo:#EBB038; --c-plum:#4B7AAB; --c-amber:#DD805F; --c-sky:#8A72AE; --c-rose:#CE7086;}
 html[data-skin="excel"] .ki-chip, html[data-skin="excel"] .statuspill, html[data-skin="excel"] .badge, html[data-skin="excel"] .tag, html[data-skin="excel"] .ki-ratio{border-radius:2px !important;}
 html[data-skin="excel"] .pill-btn{display:inline-flex !important; align-items:center; justify-content:center; text-align:center; line-height:1;}
@@ -3300,7 +3301,7 @@ function sendPensionSkin(){
   const cs = getComputedStyle(document.documentElement);
   const names = ['--paper','--card','--card-row','--ink','--ink-soft','--ink-faint','--line','--line-soft','--teal','--teal-soft','--amber','--amber-soft','--rose','--rose-soft','--indigo','--plum','--shadow','--chip-flat-bg','--oy-head-bg','--btn-primary-bg','--btn-primary-fg','--vv1','--vv2','--vv3'];
   const vars = {}; names.forEach(n=>{ vars[n] = cs.getPropertyValue(n).trim(); });
-  w.postMessage({src:'dash', type:'skin', design: document.documentElement.getAttribute('data-design')||'modern', skin: document.documentElement.getAttribute('data-skin')||'',
+  w.postMessage({src:'dash', type:'skin', dark: document.documentElement.getAttribute('data-theme')==='dark', design: document.documentElement.getAttribute('data-design')||'modern', skin: document.documentElement.getAttribute('data-skin')||'',
     font: getComputedStyle(document.body).fontFamily, vars,
     links: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l=>l.href)}, '*');
 }
