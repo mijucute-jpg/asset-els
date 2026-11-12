@@ -763,7 +763,6 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
 /* ===== 추가 디자인: 신문 ===== */
 /* --- 신문: 명조 글꼴, 이중 괘선, 박스 없는 편집 레이아웃 --- */
 html[data-skin="paper"]:not([data-theme="dark"]){--paper:#F5EFE0; --card:#F5EFE0; --card-strong:#F5EFE0; --card-row:#F5EFE0; --ink:#1B1A17; --ink-soft:#47433A; --ink-faint:#857E6C; --line:#CDC3A8; --line-soft:#E3DAC2; --teal:#1F5C44; --oy-head-bg:#EDE5CF; --oy-head-bg2:#F0E9D6; --chip-flat-bg:#EAE2CC; --btn-primary-bg:#1B1A17; --btn-primary-fg:#F5EFE0; --shadow:none;}
-html[data-skin="paper"] body, html[data-skin="paper"] button, html[data-skin="paper"] input, html[data-skin="paper"] select, html[data-skin="paper"] textarea, html[data-skin="paper"] th, html[data-skin="paper"] td{font-family:'MaruBuri','Nanum Myeongjo','Noto Serif KR','Batang','Times New Roman',serif !important;}
 html[data-skin="paper"] .topbar{border-top:4px double var(--ink); border-bottom:1px solid var(--ink); padding:16px 0 14px; margin-bottom:22px;}
 html[data-skin="paper"] .hero h1{font-size:34px; font-weight:800; letter-spacing:-.02em; font-style:normal;}
 html[data-skin="paper"] .hero .eyebrow{font-style:italic;}
@@ -817,7 +816,7 @@ html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
 
 /* --- 엑셀: 초록 리본 + 격자 셀 + 회색 머리글 --- */
 html[data-skin="excel"]:not([data-theme="dark"]){--paper:#FFFFFF; --card:#FFFFFF; --card-strong:#FFFFFF; --card-row:#FFFFFF; --ink:#1F1F1F; --ink-soft:#444444; --ink-faint:#777777; --line:#D0D0D0; --line-soft:#E4E4E4; --teal:#217346; --teal-soft:#E2F0E8; --oy-head-bg:#F2F2F2; --oy-head-bg2:#F2F2F2; --chip-flat-bg:#EDEDED; --btn-primary-bg:#217346; --btn-primary-fg:#FFFFFF; --shadow:none;}
-html[data-skin="excel"] body, html[data-skin="excel"] button, html[data-skin="excel"] input, html[data-skin="excel"] select, html[data-skin="excel"] textarea, html[data-skin="excel"] th, html[data-skin="excel"] td{font-family:'Calibri','Malgun Gothic','맑은 고딕','Segoe UI',sans-serif !important; letter-spacing:0;}
+html[data-skin="excel"] body{letter-spacing:0;}
 html[data-skin="excel"] body{font-size:13px; padding:0 0 40px !important; background-color:#fff; background-image:linear-gradient(#E6E6E6 1px,transparent 1px),linear-gradient(90deg,#E6E6E6 1px,transparent 1px); background-size:96px 24px;}
 html[data-skin="excel"] .wrap{max-width:none; padding:0 14px;}
 html[data-skin="excel"] .topbar{background:#217346; margin:0 -14px 14px; padding:8px 14px 0; border:none; align-items:flex-end; gap:10px 24px;}
@@ -866,6 +865,13 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
   html[data-skin="excel"] .topbar .viewswitch{flex:1 1 100% !important; order:1;}
   html[data-skin="excel"] .topbar .viewswitch .btn{padding:7px 0;}
   html[data-skin="excel"] #designSelect, html[data-skin="excel"] #fontSelect, html[data-skin="excel"] #themeToggle{margin:0 0 8px !important;}
+}
+
+/* 엑셀(PC): 표 바깥 테두리를 안쪽 선과 같은 굵기·색으로 */
+@media(min-width:641px){
+  html[data-skin="excel"] .tablewrap{border:none !important; box-shadow:none !important; background:transparent !important;}
+  html[data-skin="excel"] .tablewrap table{border-collapse:collapse;}
+  html[data-skin="excel"] thead th, html[data-skin="excel"] .oy-table th, html[data-skin="excel"] .oy-table-split thead tr:first-child th, html[data-skin="excel"] .oy-table-split thead tr:last-child th, html[data-skin="excel"] tbody td, html[data-skin="excel"] .oy-table td, html[data-skin="excel"] .oy-table-split td{border-color:#D4D4D4 !important;}
 }
 </style>
 </head>
