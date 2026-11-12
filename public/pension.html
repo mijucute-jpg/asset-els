@@ -482,6 +482,7 @@ thead th,.st-kpi .k{font-family:'NGR','NanumGothic','Malgun Gothic',sans-serif !
 </style>
 <main class="wrap">
   <div class="sheetbar" id="sheetbar">
+    <button class="btn csvbtn" type="button" data-act="sheet-csv" id="sheet-csv" title="시트의 연금설정·연금계좌 탭을 CSV로 내려받아 두 파일을 함께 선택하세요">CSV가져오기</button>
     <span class="st" id="sheet-st">Firebase(이 사이트)에 저장됩니다</span>
     <span class="acts">
       <button class="btn" type="button" data-act="sheet-load" id="sheet-load">불러오기</button>
@@ -1636,6 +1637,8 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
     } else if (act === 'mode') {
       state.S.mode = btn.dataset.m === 'solo' ? 'solo' : 'couple';
       touch(); renderPeople(); renderPcOwner(); renderAccounts(); update();
+    } else if (act === 'sheet-csv') {
+      post({ type: 'csv' });
     } else if (act === 'sheet-save') {
       sheetSave();
     } else if (act === 'sheet-load') {
@@ -1676,6 +1679,9 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
 .sheetbar, .emb .sheetbar{padding:6px 12px !important; margin-bottom:8px !important; gap:6px !important;}
 .sheetbar .btn, .sheetbar .acts .btn, .sheetbar .btn.save{padding:4px 12px !important; font-size:12px !important; min-height:0 !important; line-height:1.3 !important; flex:none !important;}
 .sheetbar .acts{gap:6px !important; flex-wrap:nowrap !important;}
+@media(max-width:640px){ .sheetbar .csvbtn{display:none !important;} }
+.sheetbar .st{margin-right:auto; margin-left:10px;}
+.sheetbar .csvbtn{border-color:var(--line) !important; color:var(--ink-soft) !important; background:transparent !important;}
 @media(max-width:540px){ .sheetbar, .emb .sheetbar{flex-direction:row !important; align-items:center !important; flex-wrap:nowrap !important;} .sheetbar .st{flex:1 1 auto; min-width:0; font-size:11px;} .sheetbar .acts{flex:0 0 auto;} }
 </style>
 </body></html>

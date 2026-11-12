@@ -1007,8 +1007,7 @@ html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
   </div>
 
   <div id="pensionView" style="display:none;">
-    <div class="pen-csvrow">
-      <button class="btn btn-ghost" id="pensionCsvBtn" title="시트의 연금설정·연금계좌 탭을 CSV로 내려받아 두 파일을 함께 선택하세요">시트 CSV 가져오기</button>
+    <div class="pen-csvrow" style="display:none;">
       <input type="file" id="pensionCsvFile" accept=".csv,text/csv" multiple style="display:none">
     </div>
     <div id="pensionMsg" style="padding:40px 16px; text-align:center; color:var(--ink-faint); font-size:13px;">연금 화면을 불러오는 중…</div>
@@ -3229,6 +3228,8 @@ window.addEventListener('message', async (e)=>{
   }else if(m.type === 'height'){
     const h = Math.max(400, Math.min(20000, Number(m.h) || 0));
     if(h) frame.style.height = h + 'px';
+  }else if(m.type === 'csv'){
+    $('pensionCsvFile').click();
   }else if(m.type === 'toast'){
     showPensionToast(String(m.msg || ''), !!m.undo);
   }else if(m.type === 'reload'){
@@ -3321,7 +3322,7 @@ $('csvFile').addEventListener('change', async (ev)=>{
 });
 
 /* 연금: 시트의 "연금설정", "연금계좌" CSV 두 개를 한 번에 선택해서 가져오기 */
-$('pensionCsvBtn').addEventListener('click', ()=>$('pensionCsvFile').click());
+
 $('pensionCsvFile').addEventListener('change', async (ev)=>{
   const files = Array.from(ev.target.files||[]); ev.target.value=''; if(!files.length) return;
   try{
