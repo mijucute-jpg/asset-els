@@ -698,6 +698,40 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
   #realEstateTradeGroups .oy-table td, #realEstateTradeGroups .oy-table th{padding:9px 8px;}
   #loanStatBar, #realEstateStatBar{display:grid; grid-template-columns:1fr 1fr; gap:10px;} #loanStatBar .stat, #realEstateStatBar .stat{min-width:0;}
 }
+
+@media(max-width:640px){
+  /* 대출·부동산 카드 목록: 바깥 상자 제거 + 카드 사이/안쪽 여백 */
+  #loanView .tablewrap{background:none !important; border:0 !important; box-shadow:none !important; padding:0 !important;}
+  #realEstateView .ownerYearWrap:has(#realEstateWatchTbody){background:none !important; border:0 !important; box-shadow:none !important; padding:0 !important;}
+  #realEstateView .ownerYearWrap:has(#realEstateWatchTbody) .oy-title{padding:0 2px 10px;}
+  #loanTbody, #realEstateWatchTbody{display:flex; flex-direction:column; gap:14px;}
+  #loanTbody tr, #realEstateWatchTbody tr{margin:0; padding:18px 18px 16px; gap:14px 16px; box-shadow:0 1px 6px rgba(18,21,28,.06);}
+  /* 관리 창(대출 목록 관리 / 관심단지 관리): 화면 전체, 표 → 카드, 입력 1열 */
+  .mg-overlay{padding:0; align-items:stretch;}
+  .mg-box{border-radius:0; border:0; max-width:none; min-height:100%; padding:16px 14px 28px; box-sizing:border-box;}
+  .mg-head{flex-wrap:wrap; gap:8px;}
+  .mg-head h3{flex:1 1 100%; font-size:17px;}
+  .mg-head .btn{flex:1 1 0; padding:10px 8px; font-size:13px; white-space:nowrap;}
+  .mg-tbl, .mg-tbl tbody, .mg-tbl tr, .mg-tbl td{display:block; width:100%; box-sizing:border-box;}
+  .mg-tbl thead{display:none;}
+  .mg-tbl tr{display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px; background:var(--card);}
+  .mg-tbl td{border:0; padding:0; text-align:left !important; min-width:0; word-break:break-all; font-size:13.5px;}
+  .mg-tbl td[data-label]::before{content:attr(data-label); display:block; font-size:10.5px; color:var(--ink-faint); margin-bottom:2px;}
+  .mg-tbl td.mg-act{grid-column:1/-1; display:flex; gap:8px; padding-top:6px; border-top:1px solid var(--line);}
+  .mg-tbl td.mg-act .btn{flex:1; padding:9px 0;}
+  .mg-form{grid-template-columns:1fr;}
+  .mg-form input, .mg-form select{font-size:16px; padding:11px 12px;}
+  .mg-actions .btn{flex:1; padding:11px 0;}
+}
+@media(max-width:640px){
+  #loanView #loanTbody, #realEstateView #realEstateWatchTbody{display:flex !important; flex-direction:column; gap:16px;}
+  #loanView #loanTbody tr, #realEstateView #realEstateWatchTbody tr{margin:0 !important;}
+  .mg-overlay{align-items:flex-start !important;}
+  .mg-box{min-height:100vh; min-height:100dvh;}
+  .mg-tbl td{padding:0 !important; background:none !important; border:0 !important;}
+  .mg-tbl tr{background:var(--card) !important; margin-bottom:14px; padding:16px !important;}
+  .mg-tbl td.mg-act{border-top:1px solid var(--line) !important; padding-top:12px !important;}
+}
 </style>
 </head>
 <body>
@@ -3206,8 +3240,8 @@ const mgFmt=(v,t)=> (t==='n' && v!=='' && v!=null && !isNaN(Number(v))) ? Number
 function mgRenderList(){
   const c=MG[mgKind], rows=c.list();
   $('mgList').innerHTML = rows.length ? '<table class="mg-tbl"><thead><tr>'+c.cols.map(x=>'<th>'+x[0]+'</th>').join('')+'<th></th></tr></thead><tbody>'
-    + rows.map((r,i)=>'<tr>'+c.cols.map(x=>'<td'+(x[1]==='n'?' class="r"':'')+'>'+mgFmt(r[x[0]],x[1])+'</td>').join('')
-    + '<td class="r"><button class="btn btn-ghost" data-mg-edit="'+i+'">수정</button> <button class="btn btn-ghost" data-mg-del="'+i+'">삭제</button></td></tr>').join('')
+    + rows.map((r,i)=>'<tr>'+c.cols.map(x=>'<td data-label="'+x[0]+'"'+(x[1]==='n'?' class="r"':'')+'>'+mgFmt(r[x[0]],x[1])+'</td>').join('')
+    + '<td class="r mg-act"><button class="btn btn-ghost" data-mg-edit="'+i+'">수정</button> <button class="btn btn-ghost" data-mg-del="'+i+'">삭제</button></td></tr>').join('')
     + '</tbody></table>' : '<div class="mg-empty">등록된 항목이 없습니다. "+ 추가" 또는 "CSV 가져오기"를 사용하세요.</div>';
 }
 function mgOpen(kind){ mgKind=kind; $('mgTitle').textContent=MG[kind].title; $('mgOverlay').style.display='flex'; $('mgFormWrap').style.display='none'; mgRenderList(); }
