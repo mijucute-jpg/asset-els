@@ -897,6 +897,11 @@ html[data-skin="excel"]{--c-teal:#459E67; --c-indigo:#EBB038; --c-plum:#4B7AAB; 
 html[data-skin="excel"] .ki-chip, html[data-skin="excel"] .statuspill, html[data-skin="excel"] .badge, html[data-skin="excel"] .tag, html[data-skin="excel"] .ki-ratio{border-radius:2px !important;}
 html[data-skin="excel"] .pill-btn{display:inline-flex !important; align-items:center; justify-content:center; text-align:center; line-height:1;}
 html[data-skin="excel"] .od-toolbar .pillgroup{align-items:stretch;}
+html[data-skin="excel"] .pillgroup .pill-btn{border-width:0 1px 0 0 !important; border-style:solid !important; border-color:#BFBFBF !important;}
+html[data-skin="excel"] .pillgroup .pill-btn:last-child{border-right-width:0 !important;}
+html[data-skin="excel"] .pillgroup .pill-btn.active{border-color:#217346 !important;}
+html[data-skin="excel"][data-theme="dark"] .pillgroup .pill-btn{border-color:#666 !important;}
+html[data-skin="excel"][data-theme="dark"] .pillgroup .pill-btn.active{border-color:#2E9E65 !important;}
 /* 다크모드 */
 html[data-skin="excel"][data-theme="dark"]{--paper:#1E1E1E; --card:#272727; --card-strong:#2C2C2C; --card-row:#272727; --ink:#EDEDED; --ink-soft:#CFCFCF; --ink-faint:#A0A0A0; --line:#4D4D4D; --line-soft:#3A3A3A; --oy-head-bg:#333333; --oy-head-bg2:#2D2D2D; --chip-flat-bg:#363636; --btn-primary-bg:#2E9E65; --btn-primary-fg:#FFFFFF; --teal:#5FD39A; --teal-soft:rgba(95,211,154,.18);}
 html[data-skin="excel"][data-theme="dark"] body{background:#1E1E1E !important; color:#EDEDED;}
