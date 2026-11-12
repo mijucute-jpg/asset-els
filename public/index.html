@@ -734,7 +734,7 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
 }
 @media(max-width:640px){
   /* ELS 요약(총 투자금·예상수익 등): 한 줄에 3개씩 균형 있게 */
-  #statBar{display:grid !important; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-bottom:18px;}
+  #statBar:not([style*="none"]){display:grid !important; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-bottom:18px;}
   #statBar .stat{min-width:0 !important; width:auto; padding:12px 10px !important; border-radius:14px;}
   #statBar .stat .label{font-size:10.5px !important; line-height:1.25; margin-bottom:5px; word-break:keep-all;}
   #statBar .stat .value{font-size:14.5px !important; letter-spacing:-.03em; white-space:nowrap;}
