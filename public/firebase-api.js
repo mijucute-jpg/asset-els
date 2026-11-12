@@ -31,7 +31,7 @@ try {
     const done = () => { delete window[cb]; sc.remove(); };
     const timer = setTimeout(() => { done(); reject(new Error("조회 시간 초과")); }, timeoutMs || 60000);
     window[cb] = (data) => { clearTimeout(timer); done(); resolve(data || {}); };
-    sc.onerror = () => { clearTimeout(timer); console.error("JSONP 실패 주소(새 탭에 붙여 넣어 응답을 확인하세요):", sc.src); try { window.prompt("[진단] 아래 주소를 전체 복사(Ctrl+C)해서 새 탭에 열어보세요", sc.src); } catch (e) {} done(); reject(new Error("Apps Script 주소를 불러오지 못했습니다 (배포 권한/주소 확인). 개발자도구(F12) 콘솔의 주소를 새 탭에서 열어보세요")); };
+    sc.onerror = () => { clearTimeout(timer); console.error("JSONP 실패:", sc.src); done(); reject(new Error("Apps Script 주소를 불러오지 못했습니다 (배포 권한/주소 확인, 또는 응답 시간 초과)")); };
     const q = Object.keys(params).map((k) => k + "=" + encodeURIComponent(params[k])).join("&");
     sc.src = base + (base.indexOf("?") < 0 ? "?" : "&") + q + "&callback=" + cb;
     document.head.appendChild(sc);
@@ -41,6 +41,22 @@ try {
     ID: w["ID"], "단지명": w["단지명"], "법정동코드": String(w["법정동코드"] || "").slice(0, 5), "전용면적": w["전용면적"],
   })));
   const WATCH = "realestate_watch", LOANS = "loans";
+  /* 단지별로 나눠 하나씩 요청(한 번에 여러 단지를 보내면 Apps Script 응답이 늦어 실패함) */
+  const perItem = async (action, extra, watchlist, timeoutMs) => {
+    const out = { trades: [], cachedMonths: [] }; let ok = 0, lastErr = null;
+    for (const w of watchlist) {
+      try {
+        const r = await jsonp({ action, ...extra, wl: watchSlim([w]) }, timeoutMs);
+        if (r.error) throw new Error(r.error);
+        out.trades.push(...(r.trades || []));
+        (r.cachedMonths || []).forEach((m) => { if (out.cachedMonths.indexOf(m) < 0) out.cachedMonths.push(m); });
+        ok++;
+      } catch (e) { lastErr = e; console.error("조회 실패:", w["단지명"], e); }
+    }
+    if (!ok && lastErr) throw lastErr;
+    out.trades.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    return out;
+  };
 
   const importInto = async (col, idKey, prefix, list) => {
     let n = 0;
@@ -133,9 +149,8 @@ try {
     async getRealEstateDashboard() {
       const watchlist = await window.FBAPI.getRealEstateWatchlist();
       if (!watchlist.length) return { watchlist, trades: [] };
-      const r = await jsonp({ action: "reTrades", wl: watchSlim(watchlist) }, 120000);
-      if (r.error) throw new Error(r.error);
-      const trades = r.trades || [];
+      const r = await perItem("reTrades", {}, watchlist, 90000);
+      const trades = r.trades;
       // 평가액이 비어 있는 단지는 최근 실거래가로 한 번만 채워 넣는다 (시트 버전과 같은 동작)
       const latest = {};
       trades.forEach((t) => { if (!(t.watchId in latest)) latest[t.watchId] = t; });
@@ -152,9 +167,7 @@ try {
     async forceRefreshRealEstateCache(monthsBack) {
       const watchlist = await window.FBAPI.getRealEstateWatchlist();
       if (!watchlist.length) return { cachedMonths: [] };
-      const r = await jsonp({ action: "reForce", months: monthsBack === 6 ? 6 : 3, wl: watchSlim(watchlist) }, 280000);
-      if (r.error) throw new Error(r.error);
-      return r;
+      return await perItem("reForce", { months: monthsBack === 6 ? 6 : 3 }, watchlist, 280000);
     },
     /* 종합 탭용(현재 사본에는 없음) */
     async getCashAssets() { return []; },
