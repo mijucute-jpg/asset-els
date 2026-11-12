@@ -2,7 +2,15 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#12151C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="자산관리">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 
 <link href="https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css" rel="stylesheet">
 <link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet">
@@ -775,6 +783,21 @@ html[data-skin="paper"] .oy-table th, html[data-skin="paper"] .oy-table-split th
 html[data-skin="paper"] #themeToggle, html[data-skin="paper"] #fontSelect, html[data-skin="paper"] #designSelect, html[data-skin="paper"] .btn, html[data-skin="paper"] .field input, html[data-skin="paper"] .field select, html[data-skin="paper"] .toolbar select, html[data-skin="paper"] .toolbar input[type=text]{border-radius:0; box-shadow:none; background:transparent; border:1px solid var(--ink);}
 html[data-skin="paper"] .btn-primary, html[data-skin="paper"] .btn.btn-primary{background:var(--ink); color:var(--paper);}
 html[data-skin="paper"] .modal{border-radius:0; border:2px solid var(--ink); background:var(--paper);}
+
+/* ===== 기존(doc) 디자인: 탭 높이 통일 + 컨트롤이 아래 검은 줄과 겹치지 않게 ===== */
+html[data-design="doc"] .viewswitch{gap:8px; align-items:flex-end; overflow:visible;}
+html[data-design="doc"] .viewswitch .btn, html[data-design="doc"] .viewswitch .btn.active{box-sizing:border-box; height:40px; padding:0 16px !important; margin:0 !important; display:flex; align-items:center; justify-content:center; border-radius:6px 6px 0 0; line-height:1;}
+html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
+@media(min-width:641px){
+  html[data-design="doc"] #designSelect, html[data-design="doc"] #fontSelect, html[data-design="doc"] #themeToggle{margin-bottom:5px !important; height:30px;}
+}
+@media(max-width:640px){
+  html[data-design="doc"] .topbar{padding-bottom:14px;}
+  html[data-design="doc"] .viewswitch{gap:4px; border-bottom:1px solid var(--line);}
+  html[data-design="doc"] .viewswitch .btn, html[data-design="doc"] .viewswitch .btn.active{padding:0 4px !important; font-size:13.5px;}
+  html[data-design="doc"] .viewswitch .btn.active::after{bottom:-1px; height:3px;}
+  html[data-design="doc"] #designSelect, html[data-design="doc"] #fontSelect, html[data-design="doc"] #themeToggle{margin-bottom:0 !important;}
+}
 </style>
 </head>
 <body>
@@ -3396,5 +3419,6 @@ $('mgFile').addEventListener('change', async (ev)=>{
 });
 </script>
 <script>try{Chart.defaults.font.family="'NG','NanumGothic','Malgun Gothic',sans-serif";}catch(e){}</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 </body>
 </html>
