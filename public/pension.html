@@ -1014,7 +1014,7 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
         '.seg-ctl{border:1px solid var(--line);border-radius:10px;background:var(--surface);}',
         '.seg-ctl button[aria-checked="true"]{background:' + act + ';color:' + actFg + ';}',
         'input, select, textarea{border-radius:10px;}',
-        '.st-tbl th{background:' + (v['--oy-head-bg'] || 'var(--surface-2)') + ';border-bottom:1px solid var(--line) !important;color:var(--ink-3) !important;padding:10px 8px;}',
+        '.st-tbl th{background:' + (m.dark ? 'var(--surface-2)' : (v['--oy-head-bg'] || 'var(--surface-2)')) + ';border-bottom:1px solid var(--line) !important;color:var(--ink-3) !important;padding:10px 8px;}',
         '.st-tbl td{border-bottom:1px solid var(--line);}',
         '.st-ms div{border-radius:10px;}',
         '.st-seg{border-radius:10px;}',
@@ -1028,10 +1028,11 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
     }
     if (m.skin === 'excel') {
       root.style.setProperty('--free', '#459E67'); root.style.setProperty('--taxed', '#DD805F'); root.style.setProperty('--np', '#EBB038'); root.style.setProperty('--bal', '#4B7AAB');
+      var D = !!m.dark, cBg = D ? '#262626' : '#fff', cBd = D ? '#5A5A5A' : '#BFBFBF', thBg = D ? '#333' : '#F2F2F2', thBd = D ? '#5A5A5A' : '#C8C8C8', thTx = D ? '#EEE' : '#222', tdBd = D ? '#444' : '#D4D4D4', vtBg = D ? '#333' : '#F2F2F2', actBg = D ? '#2E9E65' : '#217346';
       css += '\n.card, .st-kpi, .block, .acct, .sheetbar, .emb .sheetbar, .btn, .btn.save, input, select, textarea, .seg-ctl, .st-ms div, .st-seg, .vtabs, .vtabs button, .vtabs button[aria-selected="true"]{border-radius:0 !important;box-shadow:none !important;}' +
-        '\n.card, .st-kpi, .block, .acct, .sheetbar, .emb .sheetbar{border:1px solid #BFBFBF !important;background:#fff !important;}' +
-        '\n.st-tbl th{background:#F2F2F2 !important;border:1px solid #C8C8C8 !important;color:#222 !important;text-align:center;}.st-tbl td{border:1px solid #D4D4D4 !important;}' +
-        '\n.vtabs{background:#F2F2F2 !important;border:1px solid #BFBFBF !important;}.vtabs button[aria-selected="true"]{background:#217346 !important;color:#fff !important;}';
+        '\n.card, .st-kpi, .block, .acct, .sheetbar, .emb .sheetbar{border:1px solid ' + cBd + ' !important;background:' + cBg + ' !important;}' +
+        '\n.st-tbl th{background:' + thBg + ' !important;border:1px solid ' + thBd + ' !important;color:' + thTx + ' !important;text-align:center;}.st-tbl td{border:1px solid ' + tdBd + ' !important;}' +
+        '\n.vtabs{background:' + vtBg + ' !important;border:1px solid ' + cBd + ' !important;}.vtabs button[aria-selected="true"]{background:' + actBg + ' !important;color:#fff !important;}';
     }
     var st = document.getElementById('skin-style');
     if (!st) { st = document.createElement('style'); st.id = 'skin-style'; document.body.appendChild(st); }
