@@ -873,6 +873,15 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
   html[data-skin="excel"] .tablewrap table{border-collapse:collapse;}
   html[data-skin="excel"] thead th, html[data-skin="excel"] .oy-table th, html[data-skin="excel"] .oy-table-split thead tr:first-child th, html[data-skin="excel"] .oy-table-split thead tr:last-child th, html[data-skin="excel"] tbody td, html[data-skin="excel"] .oy-table td, html[data-skin="excel"] .oy-table-split td{border-color:#D4D4D4 !important;}
 }
+
+/* ===== 종합 탭: 현금성 자산 관리 버튼 ===== */
+#cashManageBtn{white-space:nowrap;}
+@media(max-width:640px){ #overallView .hero-net{min-height:0 !important; height:auto !important;} }
+@media(max-width:640px){
+  #od_toolbarRow{flex-wrap:wrap; justify-content:flex-start !important; gap:8px;}
+  #cashManageBtn{flex:1 1 100%; width:100%;}
+  #od_toolbarRow .pillgroup{flex:1 1 auto;}
+}
 </style>
 </head>
 <body>
@@ -909,7 +918,7 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
         <button class="btn btn-ghost" id="loanViewBtn">대출</button>
         <button class="btn btn-ghost" id="realEstateViewBtn">부동산</button>
         <button class="btn btn-ghost" id="pensionViewBtn">연금</button>
-        <button class="btn btn-ghost" id="overallViewBtn" style="display:none">종합</button>
+        <button class="btn btn-ghost" id="overallViewBtn">종합</button>
       </div>
       <select id="designSelect" title="디자인 선택">
         <option value="doc">🎨 기존</option>
@@ -1076,6 +1085,7 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
 
   <div id="overallView" style="display:none;">
     <div class="od-toolbar" id="od_toolbarRow">
+      <button class="btn btn-ghost" id="cashManageBtn" title="예금·퇴직금·금 등 현금성 자산을 직접 입력하거나 시트 CSV로 가져옵니다">현금성 자산 관리</button>
       <span class="od-toolbar-label">ELS 자산 집계 기준</span>
       <div class="pillgroup" id="odElsModeToggle">
         <button class="pill-btn active" data-mode="principal">원금만</button>
@@ -3414,6 +3424,13 @@ const MG = {
       ['연계ELS'],['상태','s',['진행중','상환완료']],['용도'],['메모']],
     list:()=>loanEntries.map(l=>l._raw), reload: async ()=>{ await refreshLoans(); renderLoanView(); }
   },
+  cash: {
+    title:'현금성 자산 관리', idKey:'ID', save:'saveCash', del:'deleteCash', imp:'importCash', csvReq:['항목명','금액'],
+    num:['금액'], date:[],
+    cols:[['항목명'],['금액','n'],['명의'],['메모']],
+    fields:[['항목명'],['금액','n'],['명의'],['메모']],
+    list:()=>cashAssets, reload: async ()=>{ await refreshCashAssets(); if(currentView==='overall') renderOverallView(); }
+  },
   watch: {
     title:'부동산 관심단지 관리', idKey:'ID', save:'saveWatch', del:'deleteWatch', imp:'importWatch', csvReq:['단지명'],
     num:['전용면적','매수금액','평가액','전세보증금','근저당'], date:[],
@@ -3454,6 +3471,7 @@ function mgCollect(){
 }
 $('loanManageBtn').addEventListener('click',()=>mgOpen('loan'));
 $('watchManageBtn').addEventListener('click',()=>mgOpen('watch'));
+$('cashManageBtn').addEventListener('click',()=>mgOpen('cash'));
 $('mgCloseBtn').addEventListener('click',()=>{ $('mgOverlay').style.display='none'; });
 $('mgAddBtn').addEventListener('click',()=>mgForm(null));
 $('mgCancelBtn').addEventListener('click',()=>{ $('mgFormWrap').style.display='none'; });
@@ -3487,8 +3505,9 @@ $('mgFile').addEventListener('change', async (ev)=>{
       c.num.forEach(k=>{ if(o[k]!==undefined){ const t=String(o[k]).replace(/[,%원\s]/g,''); o[k]=(t===''||isNaN(Number(t)))?'':Number(t); } });
       c.date.forEach(k=>{ if(o[k]!==undefined) o[k]=normCsvDate_(o[k]); });
       if(mgKind==='watch' && !o['ID']) o['ID']='RE-'+(ri+1);
+      if(mgKind==='cash' && !o['ID']) o['ID']='CASH-'+(ri+1);
       return o;
-    }).filter(o=>o[mgKind==='watch'?'단지명':'대출ID']);
+    }).filter(o=>o[mgKind==='watch'?'단지명':(mgKind==='cash'?'항목명':'대출ID')]);
     if(!list.length) throw new Error('가져올 데이터가 없습니다');
     if(!confirm(list.length+'건을 저장합니다. 같은 ID가 있으면 덮어씁니다. 진행할까요?')) return;
     const res=await gsCall(c.imp, list); alert(res.count+'건을 가져왔습니다.'); await c.reload(); mgRenderList();

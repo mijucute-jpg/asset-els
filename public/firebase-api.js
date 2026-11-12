@@ -40,7 +40,7 @@ try {
   const watchSlim = (list) => JSON.stringify(list.map((w) => ({
     ID: w["ID"], "단지명": w["단지명"], "법정동코드": String(w["법정동코드"] || "").slice(0, 5), "전용면적": w["전용면적"],
   })));
-  const WATCH = "realestate_watch", LOANS = "loans";
+  const WATCH = "realestate_watch", LOANS = "loans", CASH = "cash_assets";
   /* 단지별로 나눠 하나씩 요청(한 번에 여러 단지를 보내면 Apps Script 응답이 늦어 실패함) */
   const perItem = async (action, extra, watchlist, timeoutMs, onPartial) => {
     const out = { trades: [], cachedMonths: [] }; let ok = 0, lastErr = null;
@@ -258,8 +258,15 @@ try {
       await penSave(st);
       return { ok: true, accounts: st.accts.length, warnings: st.warnings };
     },
-    /* 종합 탭용(현재 사본에는 없음) */
-    async getCashAssets() { return []; },
+    /* ---- 종합 탭: 현금성 자산 (컬렉션 cash_assets, 필드는 시트 "현금성자산" 헤더: ID, 항목명, 금액, 메모, 명의) ---- */
+    async getCashAssets() { return (await readAll(CASH)).map(({ __id, ...r }) => ({ ...r, ID: r.ID || __id })); },
+    async saveCash(d) {
+      const id = d.ID || ("CASH-" + Math.random().toString(36).slice(2, 10));
+      await setDoc(doc(db, CASH, id), clean({ ...d, ID: id }));
+      return { status: "ok", id };
+    },
+    async deleteCash(id) { await deleteDoc(doc(db, CASH, id)); return { status: "ok" }; },
+    async importCash(list) { return importInto(CASH, "ID", "CASH-", list); },
   };
   window.__fbOk();
 } catch (e) {

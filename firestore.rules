@@ -3,7 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // 본인 구글 계정만 읽기/쓰기
     match /{col}/{id} {
-      allow read, write: if (col == "els_entries" || col == "loans" || col == "realestate_watch" || col == "pension")
+      allow read, write: if (col == "els_entries" || col == "loans" || col == "realestate_watch" || col == "pension" || col == "cash_assets")
         && request.auth != null
         && request.auth.token.email == "mijucute@gmail.com"
         && request.auth.token.email_verified == true;
