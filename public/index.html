@@ -665,6 +665,39 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
 .mg-form input,.mg-form select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;background:var(--card);color:var(--ink)}
 .mg-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
 .mg-empty{padding:26px;text-align:center;color:var(--ink-faint)}
+
+/* ===== 모바일 전용 보기: 대출 · 부동산 탭 (표 → 카드) ===== */
+@media(max-width:640px){
+  #loanView .tablewrap, #realEstateView .oy-scroll{overflow:visible;}
+  #loanView table, #loanView tbody, #loanView tr, #loanView td,
+  #realEstateWatchTbody, #realEstateWatchTbody tr, #realEstateWatchTbody td{display:block;}
+  #loanView thead, #realEstateView .ownerYearWrap:has(#realEstateWatchTbody) thead{display:none;}
+  #realEstateView .ownerYearWrap:has(#realEstateWatchTbody) table{display:block; width:100%;}
+  #loanView table{min-width:0; width:100%;}
+  #loanTbody tr, #realEstateWatchTbody tr{display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; background:var(--card,#fff); border:1px solid var(--line); border-radius:12px; padding:14px 14px 12px; margin-bottom:10px;}
+  #loanTbody td, #realEstateWatchTbody td{border:0; padding:0; text-align:left !important; min-width:0; font-size:13.5px;}
+  #loanTbody td[data-label]::before, #realEstateWatchTbody td[data-label]::before{content:attr(data-label); display:block; font-size:10.5px; color:var(--ink-faint); margin-bottom:2px; font-weight:500;}
+  #loanTbody tr, #realEstateWatchTbody tr{box-sizing:border-box; width:100%; max-width:100%;}
+  #realEstateView .oy-table{min-width:0 !important; width:100%; table-layout:fixed;}
+  #realEstateTradeGroups .oy-scroll{overflow-x:hidden;}
+  #realEstateTradeGroups .oy-table td, #realEstateTradeGroups .oy-table th{padding:9px 6px; font-size:12.5px;}
+  /* 대출 카드: 윗줄(명의·상태) → 금융기관 → 잔액(크게) → 나머지 2열 */
+  #loanTbody td:nth-child(1){order:1;} #loanTbody td:nth-child(11){order:2; text-align:right !important;}
+  #loanTbody td:nth-child(2){order:3; grid-column:1/-1; font-size:15px; font-weight:700;}
+  #loanTbody td:nth-child(3){order:4; grid-column:1/-1; font-size:20px; font-weight:700; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  #loanTbody td:nth-child(1)::before, #loanTbody td:nth-child(2)::before, #loanTbody td:nth-child(11)::before{display:none;}
+  #loanTbody td:nth-child(n+4):nth-child(-n+10){order:5;}
+  /* 부동산 카드: 단지명(크게) → 값들 2열 → 메모 */
+  #realEstateWatchTbody td:nth-child(1){grid-column:1/-1; font-size:15.5px; font-weight:700;}
+  #realEstateWatchTbody td:nth-child(1)::before{display:none;}
+  #realEstateWatchTbody td:nth-child(7){grid-column:1/-1; color:var(--ink-soft); font-size:12.5px;}
+  #realEstateWatchTbody td:nth-child(4){font-weight:700;}
+  /* 버튼줄: 한 줄에 넘치지 않고 줄바꿈 */
+  #realEstateView > div[style*="justify-content:flex-end"], #loanView > div[style*="justify-content:flex-end"]{flex-wrap:wrap; justify-content:flex-start !important;}
+  #realEstateView .btn, #loanView .btn{padding:9px 12px; font-size:12.5px;}
+  #realEstateTradeGroups .oy-table td, #realEstateTradeGroups .oy-table th{padding:9px 8px;}
+  #loanStatBar, #realEstateStatBar{display:grid; grid-template-columns:1fr 1fr; gap:10px;} #loanStatBar .stat, #realEstateStatBar .stat{min-width:0;}
+}
 </style>
 </head>
 <body>
@@ -829,10 +862,11 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
       <button class="btn btn-ghost" id="realEstateForce3Btn" title="캐시를 무시하고 최근 3개월치를 전부 다시 받아옵니다">최근 3개월 강제새로고침</button>
       <button class="btn btn-ghost" id="realEstateForce6Btn" title="캐시를 무시하고 최근 6개월치를 전부 다시 받아옵니다">최근 6개월 강제새로고침</button>
       <button class="btn btn-ghost" id="watchManageBtn">관심단지 관리</button>
+      <span id="reLiveStatus" style="display:none; font-size:12px; color:var(--ink-soft);"></span>
       <button class="btn btn-ghost" id="realEstateRefreshBtn">↻ 실거래가 새로고침</button>
     </div>
     <div class="ownerYearWrap">
-      <div class="oy-title">관심단지<span class="oy-sub oy-desc">구글시트 "부동산관리" 탭에서 단지를 등록/수정하세요 (단지명·법정동코드·전용면적·매수금액·평가액·연계대출ID·전세보증금·근저당)</span></div>
+      <div class="oy-title">관심단지<span class="oy-sub oy-desc">"관심단지 관리" 버튼에서 단지를 등록/수정하세요</span></div>
       <div class="oy-scroll">
         <table class="oy-table">
           <thead><tr><th>단지명</th><th>전용면적(㎡)</th><th>매수금액</th><th>최근 실거래가</th><th>차액</th><th>부채</th><th>메모</th></tr></thead>
@@ -1187,34 +1221,51 @@ async function refreshRealEstateWatchlist(){
     console.error('관심단지 목록을 불러오지 못했습니다: ' + e.message);
   }
 }
-// 탭을 열 때: 국토부 API를 호출하지 않고 "실거래캐시" 시트에 이미 쌓인 데이터만으로 빠르게 표시
+// 실거래 조회 결과를 이 기기에 저장해 두었다가, 탭을 열면 즉시 보여주고 뒤에서 최신으로 갱신한다
+const RE_CACHE_KEY = 'reTradesCache_v1';
+function reCacheLoad(){ try{ return JSON.parse(localStorage.getItem(RE_CACHE_KEY)||'null'); }catch(e){ return null; } }
+function reCacheSave(){ try{ localStorage.setItem(RE_CACHE_KEY, JSON.stringify({ts:Date.now(), trades:realEstateTrades})); }catch(e){} }
+function reStatus(txt){ const el=$('reLiveStatus'); if(el){ el.textContent=txt||''; el.style.display=txt?'inline':'none'; } }
+let reLoading = false;
+// background=true: 화면은 그대로 두고 단지별로 도착하는 대로 갱신(가림막 없음)
+async function loadRealEstateLive(background){
+  if(reLoading) return;
+  reLoading = true;
+  if(!background) $('realEstateLoadingOverlay').style.display = 'flex';
+  const total = realEstateWatchlist.length; let got = 0;
+  reStatus('최신 실거래 확인 중… (0/'+total+')');
+  try{
+    const res = await gsCall('getRealEstateDashboard', (wid, trades)=>{
+      realEstateTrades = realEstateTrades.filter(t=>t.watchId!==wid).concat(trades)
+        .sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+      got++; reStatus('최신 실거래 확인 중… ('+got+'/'+total+')');
+      if(currentView==='realestate') renderRealEstateView();
+    });
+    realEstateWatchlist = res.watchlist;
+    realEstateTrades = res.trades;
+    reCacheSave();
+    reStatus('');
+  }catch(e){
+    reStatus('');
+    if(!background || !realEstateTrades.length) alert('실거래가를 불러오지 못했습니다: ' + e.message);
+  }finally{
+    reLoading = false;
+    $('realEstateLoadingOverlay').style.display = 'none';
+  }
+  if(currentView==='realestate') renderRealEstateView();
+}
+// 탭을 열 때: 저장해 둔 결과가 있으면 바로 표시하고 뒤에서 갱신, 없으면 처음 한 번만 기다림
 async function refreshRealEstateCached(){
-  $('realEstateLoadingOverlay').style.display = 'flex';
-  try{
-    const res = await gsCall('getRealEstateCachedDashboard');
-    realEstateWatchlist = res.watchlist;
-    realEstateTrades = res.trades;
-  }catch(e){
-    alert('캐시 데이터를 불러오지 못했습니다: ' + e.message);
-  }finally{
-    $('realEstateLoadingOverlay').style.display = 'none';
+  const c = reCacheLoad();
+  if(c && c.trades && c.trades.length){
+    realEstateTrades = c.trades;
+    if(currentView==='realestate') renderRealEstateView();
+    return loadRealEstateLive(true);
   }
-  if(currentView==='realestate') renderRealEstateView();
+  return loadRealEstateLive(false);
 }
-// "↻ 실거래가 새로고침" 버튼: 최근 2개월(REALESTATE_LIVE_MONTHS)을 국토부 API로 라이브 조회 + 캐시 병합
-async function refreshRealEstate(){
-  $('realEstateLoadingOverlay').style.display = 'flex';
-  try{
-    const res = await gsCall('getRealEstateDashboard');
-    realEstateWatchlist = res.watchlist;
-    realEstateTrades = res.trades;
-  }catch(e){
-    alert('실거래가를 불러오지 못했습니다: ' + e.message);
-  }finally{
-    $('realEstateLoadingOverlay').style.display = 'none';
-  }
-  if(currentView==='realestate') renderRealEstateView();
-}
+// "↻ 실거래가 새로고침" 버튼
+async function refreshRealEstate(){ return loadRealEstateLive(realEstateTrades.length>0); }
 async function forceRefreshRealEstate(monthsBack){
   $('realEstateLoadingOverlay').style.display = 'flex';
   try{
@@ -1530,13 +1581,13 @@ function renderRealEstateView(){
     debtSum += debt;
     return `
     <tr>
-      <td>${w['단지명']||'-'}</td>
-      <td class="num">${w['전용면적']||'-'}</td>
-      <td class="num" style="text-align:right;">${buyAmount!=null ? reAmt(buyAmount) : '-'}</td>
-      <td class="num" style="text-align:right;">${latestText}</td>
-      <td class="num" style="text-align:right; ${diffColor}">${diffText}</td>
-      <td class="num" style="text-align:right;">${debt ? reAmt(debt) : '-'}</td>
-      <td>${w['메모']||'-'}</td>
+      <td data-label="단지명">${w['단지명']||'-'}</td>
+      <td data-label="전용면적(㎡)" class="num">${w['전용면적']||'-'}</td>
+      <td data-label="매수금액" class="num" style="text-align:right;">${buyAmount!=null ? reAmt(buyAmount) : '-'}</td>
+      <td data-label="최근 실거래가" class="num" style="text-align:right;">${latestText}</td>
+      <td data-label="차액" class="num" style="text-align:right; ${diffColor}">${diffText}</td>
+      <td data-label="부채" class="num" style="text-align:right;">${debt ? reAmt(debt) : '-'}</td>
+      <td data-label="메모">${w['메모']||'-'}</td>
     </tr>`;
   }).join('');
 
@@ -2267,17 +2318,17 @@ function renderLoanView(){
     const interestCell = mb ? `<span class="loan-cost">${fmt(mb.interest)}</span>` : '-';
 
     return `<tr>
-      <td><span class="tag tag-${l.owner}">${l.owner}</span></td>
-      <td>${l.org||'-'}</td>
-      <td class="num" style="text-align:right;">${fmt(b.balance)}${sub}</td>
-      <td class="num">${fmtPct(l.rate)}</td>
-      <td class="num">${payCell}</td>
-      <td class="num" style="text-align:right;">${paymentCell}</td>
-      <td class="num" style="text-align:right;">${principalCell}</td>
-      <td class="num" style="text-align:right;">${interestCell}</td>
-      <td class="num">${l.enddate||'-'}</td>
-      <td>${elsCell}</td>
-      <td><span class="statuspill ${l.status==='상환완료'?'off':'on'}">${l.status}</span></td>
+      <td data-label="명의"><span class="tag tag-${l.owner}">${l.owner}</span></td>
+      <td data-label="금융기관">${l.org||'-'}</td>
+      <td data-label="현재잔액" class="num" style="text-align:right;">${fmt(b.balance)}${sub}</td>
+      <td data-label="이율" class="num">${fmtPct(l.rate)}</td>
+      <td data-label="다음납부일" class="num">${payCell}</td>
+      <td data-label="월납부금액" class="num" style="text-align:right;">${paymentCell}</td>
+      <td data-label="월납부원금" class="num" style="text-align:right;">${principalCell}</td>
+      <td data-label="월납부이자" class="num" style="text-align:right;">${interestCell}</td>
+      <td data-label="만기일" class="num">${l.enddate||'-'}</td>
+      <td data-label="연계ELS">${elsCell}</td>
+      <td data-label="상태"><span class="statuspill ${l.status==='상환완료'?'off':'on'}">${l.status}</span></td>
     </tr>`;
   }).join('');
 

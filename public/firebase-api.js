@@ -42,21 +42,30 @@ try {
   })));
   const WATCH = "realestate_watch", LOANS = "loans";
   /* 단지별로 나눠 하나씩 요청(한 번에 여러 단지를 보내면 Apps Script 응답이 늦어 실패함) */
-  const perItem = async (action, extra, watchlist, timeoutMs) => {
+  const perItem = async (action, extra, watchlist, timeoutMs, onPartial) => {
     const out = { trades: [], cachedMonths: [] }; let ok = 0, lastErr = null;
-    for (const w of watchlist) {
-      try {
-        const r = await jsonp({ action, ...extra, wl: watchSlim([w]) }, timeoutMs);
-        if (r.error) throw new Error(r.error);
-        out.trades.push(...(r.trades || []));
-        (r.cachedMonths || []).forEach((m) => { if (out.cachedMonths.indexOf(m) < 0) out.cachedMonths.push(m); });
-        ok++;
-      } catch (e) { lastErr = e; console.error("조회 실패:", w["단지명"], e); }
-    }
+    const byWatch = {};
+    // 같은 지역(법정동코드 앞 5자리)은 차례로, 다른 지역은 동시에 요청 → 전체 시간이 크게 줄어듦
+    const groups = {};
+    watchlist.forEach((w) => { const k = String(w["법정동코드"] || "").slice(0, 5); (groups[k] = groups[k] || []).push(w); });
+    await Promise.all(Object.values(groups).map(async (list) => {
+      for (const w of list) {
+        try {
+          const r = await jsonp({ action, ...extra, wl: watchSlim([w]) }, timeoutMs);
+          if (r.error) throw new Error(r.error);
+          byWatch[w.ID] = r.trades || [];
+          (r.cachedMonths || []).forEach((m) => { if (out.cachedMonths.indexOf(m) < 0) out.cachedMonths.push(m); });
+          ok++;
+          if (onPartial) try { onPartial(w.ID, byWatch[w.ID]); } catch (e) {}
+        } catch (e) { lastErr = e; console.error("조회 실패:", w["단지명"], e); }
+      }
+    }));
     if (!ok && lastErr) throw lastErr;
+    watchlist.forEach((w) => out.trades.push(...(byWatch[w.ID] || [])));
     out.trades.sort((a, b) => String(b.date).localeCompare(String(a.date)));
     return out;
   };
+
 
   const importInto = async (col, idKey, prefix, list) => {
     let n = 0;
@@ -146,10 +155,10 @@ try {
     async deleteWatch(id) { await deleteDoc(doc(db, WATCH, id)); return { status: "ok" }; },
     async importWatch(list) { return importInto(WATCH, "ID", "RE-", list); },
     /* 실거래 조회는 Apps Script(국토부 API 키 보유)에 관심단지 목록을 넘겨 받아온다 */
-    async getRealEstateDashboard() {
+    async getRealEstateDashboard(onPartial) {
       const watchlist = await window.FBAPI.getRealEstateWatchlist();
       if (!watchlist.length) return { watchlist, trades: [] };
-      const r = await perItem("reTrades", {}, watchlist, 90000);
+      const r = await perItem("reTrades", {}, watchlist, 90000, onPartial);
       const trades = r.trades;
       // 평가액이 비어 있는 단지는 최근 실거래가로 한 번만 채워 넣는다 (시트 버전과 같은 동작)
       const latest = {};
@@ -163,7 +172,7 @@ try {
       }
       return { watchlist, trades };
     },
-    async getRealEstateCachedDashboard() { return window.FBAPI.getRealEstateDashboard(); },
+    async getRealEstateCachedDashboard(onPartial) { return window.FBAPI.getRealEstateDashboard(onPartial); },
     async forceRefreshRealEstateCache(monthsBack) {
       const watchlist = await window.FBAPI.getRealEstateWatchlist();
       if (!watchlist.length) return { cachedMonths: [] };
