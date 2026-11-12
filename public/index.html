@@ -885,7 +885,7 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
 }
 
 /* ===== 엑셀 디자인 보강: 모양 통일 + 밝은 차트 색 + 다크모드 ===== */
-html[data-skin="excel"]{--c-rose:#FF7B7B; --c-plum:#D58BFF; --c-indigo:#6FA0FF; --c-amber:#FFC65C; --c-sky:#52CFF5; --c-teal:#3DD6A5;}
+html[data-skin="excel"]{--c-teal:#4472C4; --c-indigo:#ED7D31; --c-plum:#A5A5A5; --c-amber:#FFC000; --c-sky:#5B9BD5; --c-rose:#70AD47;}
 html[data-skin="excel"] .ki-chip, html[data-skin="excel"] .statuspill, html[data-skin="excel"] .badge, html[data-skin="excel"] .tag, html[data-skin="excel"] .ki-ratio{border-radius:2px !important;}
 html[data-skin="excel"] .pill-btn{display:inline-flex !important; align-items:center; justify-content:center; text-align:center; line-height:1;}
 html[data-skin="excel"] .od-toolbar .pillgroup{align-items:stretch;}
@@ -2735,7 +2735,9 @@ function renderOwnerMonthPrincipal(){
 }
 
 function resolveVar(name, fallback){
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const cs = getComputedStyle(document.documentElement);
+  const c = (typeof name==='string' && name.indexOf('--')===0) ? cs.getPropertyValue('--c-'+name.slice(2)).trim() : '';
+  const v = c || cs.getPropertyValue(name).trim();
   return v || fallback;
 }
 function ownerColorVar(owner){
