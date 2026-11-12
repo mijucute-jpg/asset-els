@@ -881,7 +881,39 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
   #od_toolbarRow{flex-wrap:wrap; justify-content:flex-start !important; gap:8px;}
   #cashManageBtn{flex:1 1 100%; width:100%;}
   #od_toolbarRow .pillgroup{flex:1 1 auto;}
+  #od_toolbarRow .pillgroup .pill-btn{flex:1 1 0; text-align:center; justify-content:center;}
 }
+
+/* ===== 엑셀 디자인 보강: 모양 통일 + 밝은 차트 색 + 다크모드 ===== */
+html[data-skin="excel"]{--c-rose:#FF7B7B; --c-plum:#D58BFF; --c-indigo:#6FA0FF; --c-amber:#FFC65C; --c-sky:#52CFF5; --c-teal:#3DD6A5;}
+html[data-skin="excel"] .ki-chip, html[data-skin="excel"] .statuspill, html[data-skin="excel"] .badge, html[data-skin="excel"] .tag, html[data-skin="excel"] .ki-ratio{border-radius:2px !important;}
+html[data-skin="excel"] .pill-btn{display:inline-flex !important; align-items:center; justify-content:center; text-align:center; line-height:1;}
+html[data-skin="excel"] .od-toolbar .pillgroup{align-items:stretch;}
+/* 다크모드 */
+html[data-skin="excel"][data-theme="dark"]{--paper:#1E1E1E; --card:#272727; --card-strong:#2C2C2C; --card-row:#272727; --ink:#EDEDED; --ink-soft:#CFCFCF; --ink-faint:#A0A0A0; --line:#4D4D4D; --line-soft:#3A3A3A; --oy-head-bg:#333333; --oy-head-bg2:#2D2D2D; --chip-flat-bg:#363636; --btn-primary-bg:#2E9E65; --btn-primary-fg:#FFFFFF; --teal:#5FD39A; --teal-soft:rgba(95,211,154,.18);}
+html[data-skin="excel"][data-theme="dark"] body{background:#1E1E1E !important; color:#EDEDED;}
+html[data-skin="excel"][data-theme="dark"] .wrap{background-image:linear-gradient(#2B2B2B 1px,transparent 1px),linear-gradient(90deg,#2B2B2B 1px,transparent 1px);}
+html[data-skin="excel"][data-theme="dark"] .topbar{background:#185C37;}
+html[data-skin="excel"][data-theme="dark"] .viewswitch .btn.active{background:#272727 !important; color:#7FE0AE !important;}
+html[data-skin="excel"][data-theme="dark"] .stat, html[data-skin="excel"][data-theme="dark"] .ownerYearWrap, html[data-skin="excel"][data-theme="dark"] .tablewrap, html[data-skin="excel"][data-theme="dark"] .toolbar, html[data-skin="excel"][data-theme="dark"] .hero-net, html[data-skin="excel"][data-theme="dark"] .barwrap, html[data-skin="excel"][data-theme="dark"] .od-cat, html[data-skin="excel"][data-theme="dark"] .m-card, html[data-skin="excel"][data-theme="dark"] .m-item{background:#272727; border-color:#4D4D4D; color:#EDEDED;}
+html[data-skin="excel"][data-theme="dark"] .stat .label{background:#333; color:#D0D0D0; border-bottom-color:#4D4D4D;}
+html[data-skin="excel"][data-theme="dark"] .stat .value{color:#F2F2F2;}
+html[data-skin="excel"][data-theme="dark"] .oy-title{color:#6FE0A8;}
+html[data-skin="excel"][data-theme="dark"] thead th, html[data-skin="excel"][data-theme="dark"] .oy-table th, html[data-skin="excel"][data-theme="dark"] .oy-table-split thead tr:first-child th, html[data-skin="excel"][data-theme="dark"] .oy-table-split thead tr:last-child th{background:#333 !important; color:#E2E2E2 !important; border-color:#4D4D4D !important;}
+html[data-skin="excel"][data-theme="dark"] tbody td, html[data-skin="excel"][data-theme="dark"] .oy-table td, html[data-skin="excel"][data-theme="dark"] .oy-table-split td{background:#272727 !important; color:#EDEDED; border-color:#444 !important;}
+html[data-skin="excel"][data-theme="dark"] tbody tr:hover td{background:#31403A !important;}
+html[data-skin="excel"][data-theme="dark"] .oy-total td, html[data-skin="excel"][data-theme="dark"] .oy-table-split tbody tr.oy-total td{background:#2B3A32 !important;}
+html[data-skin="excel"][data-theme="dark"] .btn, html[data-skin="excel"][data-theme="dark"] .btn-icon{background:#333; color:#EDEDED; border-color:#666;}
+html[data-skin="excel"][data-theme="dark"] .btn:hover{background:#3C4A43; border-color:#5FD39A;}
+html[data-skin="excel"][data-theme="dark"] .btn-primary, html[data-skin="excel"][data-theme="dark"] .btn.btn-primary{background:#2E9E65; border-color:#2E9E65; color:#fff;}
+html[data-skin="excel"][data-theme="dark"] .pillgroup, html[data-skin="excel"][data-theme="dark"] .od-toolbar .pillgroup{background:#333; border-color:#666;}
+html[data-skin="excel"][data-theme="dark"] .pill-btn{background:transparent; color:#D8D8D8; border-color:transparent;}
+html[data-skin="excel"][data-theme="dark"] .pill-btn.active, html[data-skin="excel"][data-theme="dark"] .od-toolbar .pill-btn.active{background:#2E9E65 !important; color:#fff !important;}
+html[data-skin="excel"][data-theme="dark"] .field input, html[data-skin="excel"][data-theme="dark"] .field select, html[data-skin="excel"][data-theme="dark"] .toolbar select, html[data-skin="excel"][data-theme="dark"] .toolbar input[type=text], html[data-skin="excel"][data-theme="dark"] .field textarea{background:#2E2E2E; color:#EDEDED; border-color:#666;}
+html[data-skin="excel"][data-theme="dark"] .stab-btn{background:#333; color:#CFCFCF; border-color:#4D4D4D;}
+html[data-skin="excel"][data-theme="dark"] .stab-btn.active{background:#272727; color:#6FE0A8; border-top-color:#2E9E65;}
+html[data-skin="excel"][data-theme="dark"] .modal{background:#272727; color:#EDEDED; border-color:#2E9E65;}
+html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"][data-theme="dark"] #fontSelect, html[data-skin="excel"][data-theme="dark"] #themeToggle{background:#1F6F45; border-color:#124A2E; color:#fff;}
 </style>
 </head>
 <body>
@@ -1508,7 +1540,7 @@ const OD_PALETTE = ['rose','plum','indigo','amber','sky','teal'];
 let odElsMode = 'principal'; // 'principal' | 'withprofit' — 순자산/총자산/자산구성에 ELS 예상수익을 포함할지
 let odUnit = 'won'; // 'won' | 'man' — 종합 탭 전용 원단위/만원단위 표시 설정 (부동산 탭의 realEstateUnit과 동일한 패턴)
 // 종합 대시보드의 도넛 차트는 ELS 관리탭의 도넛 차트와 동일하게, 현재 테마(라이트/다크)의 CSS 색상변수를 그대로 사용합니다.
-function odColorVar(name){ return getComputedStyle(document.documentElement).getPropertyValue('--'+name).trim() || '#999'; }
+function odColorVar(name){ const cs=getComputedStyle(document.documentElement); return cs.getPropertyValue('--c-'+name).trim() || cs.getPropertyValue('--'+name).trim() || '#999'; }
 // 원 단위 금액을 odUnit 설정(원단위/만원단위)에 맞춰 숫자로만 표시 (ELS/부동산 탭과 동일한 fmt() 사용)
 function odAmt(amountWon){
   if(amountWon==null || isNaN(amountWon)) return '-';
