@@ -20,3 +20,9 @@
 기초자산 현재가/전일종가는 외부 사이트 조회가 필요해 Cloud Function(`functions/`)이 필요합니다(Blaze 요금제).
 `functions/index.js` 의 이메일을 바꾸고 `firebase deploy --only functions` 후, 나온 `stockPrices` 주소를 `PRICE_API_URL` 에 넣으세요.
 (firebase.json 에 `"functions": {"source": "functions"}` 추가 필요) 설정하지 않으면 시세 없이 나머지 기능은 정상 동작합니다.
+
+## 대출 · 부동산 탭
+- 데이터는 Firestore(`loans`, `realestate_watch`)에 저장합니다. 각 탭의 **대출 목록 관리 / 관심단지 관리** 버튼으로 추가·수정·삭제하고, 구글시트 해당 탭을 CSV로 내려받아 **CSV 가져오기**로 옮길 수 있습니다.
+- 부동산 실거래 조회는 Apps Script(국토부 인증키 보유)를 JSONP로 호출합니다. 최신 `Code.gs`로 교체 후 새 버전 배포가 필요합니다(`PRICE_API_URL` 사용).
+- 신규 실거래 메일/문자 알림은 계속 Apps Script가 시트의 관심단지 목록으로 보냅니다. 관심단지를 바꾸면 시트에도 같이 반영해야 알림이 맞습니다.
+- `firestore.rules` 가 바뀌었으므로 `firebase deploy --only firestore` 를 한 번 실행해야 합니다.

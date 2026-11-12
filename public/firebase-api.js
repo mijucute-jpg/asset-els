@@ -22,6 +22,40 @@ try {
   const randId = () => "ELS-" + Math.random().toString(36).slice(2, 10);
   let cache = [];
 
+  /* Apps Script 웹앱 호출(JSONP). 시세/부동산 실거래 조회에 사용 */
+  const jsonp = (params, timeoutMs) => new Promise((resolve, reject) => {
+    const base = window.PRICE_API_URL;
+    if (!base) return reject(new Error("firebase-config.js 의 PRICE_API_URL(Apps Script 웹앱 주소)이 비어 있습니다"));
+    const cb = "__jp" + Date.now() + Math.floor(Math.random() * 1000);
+    const sc = document.createElement("script");
+    const done = () => { delete window[cb]; sc.remove(); };
+    const timer = setTimeout(() => { done(); reject(new Error("조회 시간 초과")); }, timeoutMs || 60000);
+    window[cb] = (data) => { clearTimeout(timer); done(); resolve(data || {}); };
+    sc.onerror = () => { clearTimeout(timer); done(); reject(new Error("Apps Script 주소를 불러오지 못했습니다 (배포 권한/주소 확인)")); };
+    const q = Object.keys(params).map((k) => k + "=" + encodeURIComponent(params[k])).join("&");
+    sc.src = base + (base.indexOf("?") < 0 ? "?" : "&") + q + "&callback=" + cb;
+    document.head.appendChild(sc);
+  });
+  const readAll = async (col) => (await getDocs(collection(db, col))).docs.map((d) => ({ ...d.data(), __id: d.id }));
+  const watchSlim = (list) => JSON.stringify(list.map((w) => ({
+    ID: w["ID"], "단지명": w["단지명"], "법정동코드": w["법정동코드"], "전용면적": w["전용면적"], "메모": w["메모"],
+  })));
+  const WATCH = "realestate_watch", LOANS = "loans";
+
+  const importInto = async (col, idKey, prefix, list) => {
+    let n = 0;
+    for (let i = 0; i < list.length; i += 400) {
+      const batch = writeBatch(db);
+      list.slice(i, i + 400).forEach((e) => {
+        const id = e[idKey] || (prefix + Math.random().toString(36).slice(2, 10));
+        batch.set(doc(db, col, id), clean({ ...e, [idKey]: id }));
+        n++;
+      });
+      await batch.commit();
+    }
+    return { status: "ok", count: n };
+  };
+
   window.FBAPI = {
     signIn: () => signInWithPopup(auth, new GoogleAuthProvider()),
     signOut: () => signOut(auth),
@@ -70,28 +104,59 @@ try {
     async getStockPrices(names) {
       const url = window.PRICE_API_URL;
       if (!url) return {};
-      const q = (names || []).join(",");
-      if (/script\.google\.com/.test(url)) {
-        // Apps Script 웹앱: CORS 제한을 피하려고 JSONP(스크립트 태그)로 호출
-        return await new Promise((resolve, reject) => {
-          const cb = "__px" + Date.now();
-          const sc = document.createElement("script");
-          const done = () => { delete window[cb]; sc.remove(); };
-          const timer = setTimeout(() => { done(); reject(new Error("시세 조회 시간 초과")); }, 15000);
-          window[cb] = (data) => { clearTimeout(timer); done(); resolve(data || {}); };
-          sc.onerror = () => { clearTimeout(timer); done(); reject(new Error("시세 주소를 불러오지 못했습니다 (배포 권한/주소 확인)")); };
-          sc.src = url + (url.indexOf("?") < 0 ? "?" : "&") + "action=prices&callback=" + cb + "&names=" + encodeURIComponent(q);
-          document.head.appendChild(sc);
-        });
-      }
-      const token = await auth.currentUser.getIdToken();
-      const res = await fetch(url + "?names=" + encodeURIComponent(q), { headers: { Authorization: "Bearer " + token } });
-      if (!res.ok) throw new Error("시세 조회 실패 " + res.status);
-      return await res.json();
+      return await jsonp({ action: "prices", names: (names || []).join(",") }, 15000);
     },
-    /* ELS 탭만 있는 복사본이라 아래는 빈 값 */
-    async getLoanEntries() { return []; },
-    async getRealEstateWatchlist() { return []; },
+
+    /* ---- 대출 (컬렉션 loans, 문서 ID = 대출ID, 필드는 시트 헤더와 같은 한글 이름) ---- */
+    async getLoanEntries() { return (await readAll(LOANS)).map(({ __id, ...r }) => ({ ...r, "대출ID": r["대출ID"] || __id })); },
+    async saveLoan(d) {
+      const id = d["대출ID"] || ("LN-" + Math.random().toString(36).slice(2, 10));
+      await setDoc(doc(db, LOANS, id), clean({ ...d, "대출ID": id }));
+      return { status: "ok", id };
+    },
+    async deleteLoan(id) { await deleteDoc(doc(db, LOANS, id)); return { status: "ok" }; },
+    async importLoans(list) { return importInto(LOANS, "대출ID", "LN-", list); },
+
+    /* ---- 부동산 관심단지 (컬렉션 realestate_watch) ---- */
+    async getRealEstateWatchlist() {
+      return (await readAll(WATCH)).map(({ __id, ...r }) => ({ ...r, ID: r.ID || __id }))
+        .sort((a, b) => String(a.ID).localeCompare(String(b.ID)));
+    },
+    async saveWatch(d) {
+      const id = d.ID || ("RE-" + Math.random().toString(36).slice(2, 10));
+      await setDoc(doc(db, WATCH, id), clean({ ...d, ID: id }));
+      return { status: "ok", id };
+    },
+    async deleteWatch(id) { await deleteDoc(doc(db, WATCH, id)); return { status: "ok" }; },
+    async importWatch(list) { return importInto(WATCH, "ID", "RE-", list); },
+    /* 실거래 조회는 Apps Script(국토부 API 키 보유)에 관심단지 목록을 넘겨 받아온다 */
+    async getRealEstateDashboard() {
+      const watchlist = await window.FBAPI.getRealEstateWatchlist();
+      if (!watchlist.length) return { watchlist, trades: [] };
+      const r = await jsonp({ action: "reTrades", wl: watchSlim(watchlist) }, 120000);
+      if (r.error) throw new Error(r.error);
+      const trades = r.trades || [];
+      // 평가액이 비어 있는 단지는 최근 실거래가로 한 번만 채워 넣는다 (시트 버전과 같은 동작)
+      const latest = {};
+      trades.forEach((t) => { if (!(t.watchId in latest)) latest[t.watchId] = t; });
+      for (const w of watchlist) {
+        const empty = w["평가액"] === "" || w["평가액"] === null || w["평가액"] === undefined;
+        if (empty && latest[w.ID]) {
+          w["평가액"] = latest[w.ID].amount;
+          await setDoc(doc(db, WATCH, w.ID), { "평가액": latest[w.ID].amount }, { merge: true });
+        }
+      }
+      return { watchlist, trades };
+    },
+    async getRealEstateCachedDashboard() { return window.FBAPI.getRealEstateDashboard(); },
+    async forceRefreshRealEstateCache(monthsBack) {
+      const watchlist = await window.FBAPI.getRealEstateWatchlist();
+      if (!watchlist.length) return { cachedMonths: [] };
+      const r = await jsonp({ action: "reForce", months: monthsBack === 6 ? 6 : 3, wl: watchSlim(watchlist) }, 280000);
+      if (r.error) throw new Error(r.error);
+      return r;
+    },
+    /* 종합 탭용(현재 사본에는 없음) */
     async getCashAssets() { return []; },
   };
   window.__fbOk();
