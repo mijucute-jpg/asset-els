@@ -776,7 +776,7 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
         <button class="btn btn-ghost active" id="elsViewBtn">ELS</button>
         <button class="btn btn-ghost" id="loanViewBtn">대출</button>
         <button class="btn btn-ghost" id="realEstateViewBtn">부동산</button>
-        <button class="btn btn-ghost" id="pensionViewBtn" style="display:none">연금</button>
+        <button class="btn btn-ghost" id="pensionViewBtn">연금</button>
         <button class="btn btn-ghost" id="overallViewBtn" style="display:none">종합</button>
       </div>
       <select id="designSelect" title="디자인 선택">
@@ -933,6 +933,10 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
   </div>
 
   <div id="pensionView" style="display:none;">
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:10px;">
+      <button class="btn btn-ghost" id="pensionCsvBtn" title="시트의 연금설정·연금계좌 탭을 CSV로 내려받아 두 파일을 함께 선택하세요">시트 CSV 가져오기</button>
+      <input type="file" id="pensionCsvFile" accept=".csv,text/csv" multiple style="display:none">
+    </div>
     <div id="pensionMsg" style="padding:40px 16px; text-align:center; color:var(--ink-faint); font-size:13px;">연금 화면을 불러오는 중…</div>
     <iframe id="pensionFrame" title="연금 수령 시뮬레이터" scrolling="no" style="display:none; width:100%; height:900px; border:0; background:transparent;"></iframe>
   </div>
@@ -3220,6 +3224,26 @@ $('csvFile').addEventListener('change', async (ev)=>{
     const res = await gsCall('importEntries', list);
     alert(res.count+'건을 가져왔습니다.');
     refreshFromSheet();
+  }catch(e){ alert('가져오기 실패: '+e.message); }
+});
+
+/* 연금: 시트의 "연금설정", "연금계좌" CSV 두 개를 한 번에 선택해서 가져오기 */
+$('pensionCsvBtn').addEventListener('click', ()=>$('pensionCsvFile').click());
+$('pensionCsvFile').addEventListener('change', async (ev)=>{
+  const files = Array.from(ev.target.files||[]); ev.target.value=''; if(!files.length) return;
+  try{
+    let setRows=null, acRows=null;
+    for(const f of files){
+      const rows = parseCsv_(await f.text()).filter(r=>r.some(x=>String(x).trim()!==''));
+      const head = (rows[0]||[]).map(h=>String(h).trim());
+      if(head[0]==='항목') setRows = rows;
+      else if(head.indexOf('계좌명')>=0) acRows = rows;
+    }
+    if(!setRows) throw new Error('"연금설정" 시트의 CSV가 없습니다 (첫 줄이 항목, 값, 설명인 파일). 연금설정과 연금계좌 두 파일을 함께 선택해주세요');
+    if(!confirm('연금 데이터를 가져옵니다 (연금설정 '+(setRows.length-1)+'줄, 연금계좌 '+(acRows?acRows.length-1:0)+'줄). 지금 저장된 연금 값은 덮어씁니다. 진행할까요?')) return;
+    const res = await gsCall('importPensionCsv', setRows, acRows||[]);
+    alert('가져왔습니다 (계좌 '+res.accounts+'개)'+(res.warnings&&res.warnings.length ? '\n\n확인할 것:\n'+res.warnings.join('\n') : ''));
+    pensionLoaded = false; ensurePensionLoaded();
   }catch(e){ alert('가져오기 실패: '+e.message); }
 });
 </script>

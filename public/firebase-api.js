@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, writeBatch }
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, deleteDoc, writeBatch }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 try {
@@ -79,6 +79,68 @@ try {
       await batch.commit();
     }
     return { status: "ok", count: n };
+  };
+
+
+  /* ---- 연금 (문서 pension/state 하나에 화면 상태를 JSON 글자로 저장) ---- */
+  const PEN_NUM = (v) => { const n = Number(String(v == null ? "" : v).replace(/[,\s]|만원|세|%/g, "")); return isFinite(n) ? n : 0; };
+  const PEN_BOOL = (v) => v === true || String(v).toLowerCase() === "true";
+  const PEN_SET = [["infl","n"],["inflOn","b"],["realOn","b"],["taxLow","s"],["taxHigh","s"],["npBase","s"],["mode","s"],["unit","s"],["nextId","n"]];
+  const PEN_PLAN = (text) => {
+    const plan = [];
+    String(text || "").split(/[\/;|\n]/).forEach((part) => {
+      const m = part.match(/(\d+)\s*세?\s*[~\-–]\s*(\d+)\s*세?\s*[:：]?\s*([\d.,]+)/);
+      if (m) plan.push({ from: Number(m[1]), to: Number(m[2]), amt: Number(m[3].replace(/,/g, "")) });
+    });
+    return plan;
+  };
+  /* 시트 "연금설정"/"연금계좌" 를 CSV로 내려받아 읽은 줄(첫 줄=제목 포함)을 화면 상태로 바꿈 (Code.gs readPensionData_ 와 같은 규칙) */
+  const pensionFromRows = (setRows, acRows) => {
+    const kv = {};
+    setRows.slice(1).forEach((r) => { if (r[0] !== "" && r[1] !== "" && r[1] != null) kv[String(r[0]).trim()] = r[1]; });
+    const S = {};
+    PEN_SET.forEach(([k, t]) => {
+      if (kv[k] === undefined || k === "nextId") return;
+      S[k] = t === "n" ? Number(PEN_NUM(kv[k])) : t === "b" ? PEN_BOOL(kv[k]) : String(kv[k]);
+    });
+    S.people = [0, 1, 2].map((i) => {
+      const g = (key) => kv["p" + i + "_" + key];
+      const p = { np: {} };
+      if (g("name") !== undefined) p.name = String(g("name"));
+      if (g("curAge") !== undefined) p.curAge = PEN_NUM(g("curAge"));
+      if (g("endAge") !== undefined) p.endAge = PEN_NUM(g("endAge"));
+      if (g("npOn") !== undefined) p.npOn = PEN_BOOL(g("npOn"));
+      if (g("npMonthly") !== undefined) p.np.monthly = PEN_NUM(g("npMonthly"));
+      if (g("npStartAge") !== undefined) p.np.startAge = PEN_NUM(g("npStartAge"));
+      if (g("npTaxPct") !== undefined) p.np.taxPct = PEN_NUM(g("npTaxPct"));
+      if (g("hi") !== undefined) p.hi = String(g("hi"));
+      return p;
+    });
+    const pnames = S.people.map((p) => (p.name === undefined ? "" : String(p.name).trim()));
+    const accts = [], warnings = [];
+    (acRows || []).slice(1).forEach((r, idx) => {
+      if ((r[0] === "" || r[0] == null) && (r[3] === "" || r[3] == null)) return;
+      const row = idx + 2;
+      const modeTxt = String(r[8] == null ? "" : r[8]).trim(), baseTxt = String(r[9] == null ? "" : r[9]).trim();
+      const pct = /비율|%|pct/i.test(modeTxt);
+      if (modeTxt !== "금액" && modeTxt !== "비율") warnings.push(row + "행 인출방식이 금액/비율이 아니라 " + (pct ? "비율" : "금액") + "으로 읽었어요");
+      let owner = pnames.indexOf(String(r[2] == null ? "" : r[2]).trim());
+      const num = (r[1] === "" || r[1] == null) ? NaN : Number(r[1]);
+      if (owner < 0) owner = (num === 0 || num === 1 || num === 2) ? num : (String(r[11] == null ? "" : r[11]).trim() === "1인" ? 2 : 0);
+      const plan = PEN_PLAN(r[10]);
+      if (String(r[10] == null ? "" : r[10]).trim() !== "" && !plan.length) warnings.push(row + "행 인출계획을 읽지 못했어요");
+      accts.push({ id: Number(r[0]) || (accts.length + 1), owner, name: String(r[3] || "계좌"), value: PEN_NUM(r[4]), nonCredit: PEN_NUM(r[5]),
+        startAge: PEN_NUM(r[6]), rate: PEN_NUM(r[7]), planMode: pct ? "pct" : "amt", pctBase: /잔액/.test(baseTxt) ? "bal" : "value", plan });
+    });
+    const out = { S, accts, warnings };
+    if (kv.nextId !== undefined) out.nextId = Number(PEN_NUM(kv.nextId));
+    return out;
+  };
+  const penSave = async (state) => {
+    if (!state || !state.S || !Array.isArray(state.S.people) || !Array.isArray(state.accts)) throw new Error("저장할 데이터가 올바르지 않습니다.");
+    if (state.accts.length > 200) throw new Error("계좌가 너무 많습니다.");
+    await setDoc(doc(db, "pension", "state"), { json: JSON.stringify(state), updated: Date.now() });
+    return { ok: true, accounts: state.accts.length };
   };
 
   window.FBAPI = {
@@ -177,6 +239,24 @@ try {
       const watchlist = await window.FBAPI.getRealEstateWatchlist();
       if (!watchlist.length) return { cachedMonths: [] };
       return await perItem("reForce", { months: monthsBack === 6 ? 6 : 3 }, watchlist, 280000);
+    },
+    /* ---- 연금 ---- */
+    async getPensionPage() {
+      const res = await fetch("pension.html", { cache: "no-cache" });
+      if (!res.ok) throw new Error("연금 화면 파일(pension.html)을 불러오지 못했습니다");
+      const html = await res.text();
+      let data = null;
+      const snap = await getDoc(doc(db, "pension", "state"));
+      if (snap.exists() && snap.data().json) { try { data = JSON.parse(snap.data().json); } catch (e) { data = null; } }
+      if (data) data.readAt = new Date().toTimeString().slice(0, 8);
+      return { html, data, diag: { ss: "Firebase", settings: data ? 2 : 0, accounts: data ? data.accts.length + 1 : 0 } };
+    },
+    async savePensionData(state) { return penSave(state); },
+    async importPensionCsv(setRows, acRows) {
+      const st = pensionFromRows(setRows, acRows);
+      if (!st.S.people.some((p) => p.name)) throw new Error("연금설정 CSV에서 사람 이름(p0_name 등)을 찾지 못했습니다. 파일이 맞는지 확인해주세요");
+      await penSave(st);
+      return { ok: true, accounts: st.accts.length, warnings: st.warnings };
     },
     /* 종합 탭용(현재 사본에는 없음) */
     async getCashAssets() { return []; },
