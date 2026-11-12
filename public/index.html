@@ -867,6 +867,59 @@ html[data-skin="excel"] .modal-head{background:#217346; color:#fff;}
   html[data-skin="excel"] .topbar .viewswitch .btn{padding:7px 0;}
   html[data-skin="excel"] #designSelect, html[data-skin="excel"] #fontSelect, html[data-skin="excel"] #themeToggle{margin:0 0 8px !important;}
 }
+
+/* ===== 엑셀: 배경 격자에 맞춰 모든 컨트롤/표/카드 높이를 칸(--g) 단위로 정렬 ===== */
+html[data-skin="excel"]{--g:24px; --gw:96px;}
+@media(max-width:640px){ html[data-skin="excel"]{--g:36px; --gw:90px;} }
+html[data-skin="excel"] body{background-image:none !important; background:#fff !important;}
+html[data-skin="excel"] .wrap{min-height:100vh; background-image:linear-gradient(#DCDCDC 1px,transparent 1px),linear-gradient(90deg,#DCDCDC 1px,transparent 1px); background-size:var(--gw) var(--g); background-position:14px 0;}
+html[data-skin="excel"] .topbar{box-sizing:border-box; height:calc(var(--g)*2); margin:0 -14px var(--g) !important; padding:0 14px !important; align-items:flex-end; flex-wrap:nowrap;}
+html[data-skin="excel"] .hero{height:calc(var(--g)*2); display:flex; align-items:center; padding:0;}
+html[data-skin="excel"] .hero h1{padding:0; line-height:1;}
+html[data-skin="excel"] .topbar > div:last-child{align-items:flex-end !important; gap:6px !important;}
+html[data-skin="excel"] .viewswitch .btn, html[data-skin="excel"] .viewswitch .btn.active{box-sizing:border-box; height:var(--g); padding:0 16px !important; display:inline-flex; align-items:center; justify-content:center; line-height:1;}
+html[data-skin="excel"] #themeToggle, html[data-skin="excel"] #fontSelect, html[data-skin="excel"] #designSelect{box-sizing:border-box; height:var(--g) !important; margin:0 !important; padding:0 8px; line-height:1;}
+/* 컨트롤 높이 = 1칸 */
+html[data-skin="excel"] .btn, html[data-skin="excel"] .btn-icon, html[data-skin="excel"] .pill-btn, html[data-skin="excel"] .field input, html[data-skin="excel"] .field select, html[data-skin="excel"] .toolbar select, html[data-skin="excel"] .toolbar input[type=text], html[data-skin="excel"] .stab-btn{box-sizing:border-box; height:var(--g); padding-top:0 !important; padding-bottom:0 !important; line-height:calc(var(--g) - 2px); display:inline-flex; align-items:center; justify-content:center; vertical-align:top;}
+html[data-skin="excel"] .toolbar select, html[data-skin="excel"] .toolbar input[type=text], html[data-skin="excel"] .field input, html[data-skin="excel"] .field select{display:inline-block; line-height:normal; padding:0 8px !important;}
+html[data-skin="excel"] .pillgroup{height:var(--g); box-sizing:border-box; align-items:stretch;}
+html[data-skin="excel"] .toolbar{padding:0 !important; gap:0 8px !important; row-gap:0 !important; margin:0 0 var(--g) !important; align-items:flex-start;}
+html[data-skin="excel"] .re-toolbar{gap:0 8px; row-gap:0; margin-bottom:var(--g);}
+html[data-skin="excel"] .re-toolbar .btn{height:var(--g);}
+/* 카드/표 */
+html[data-skin="excel"] .stats{gap:0 !important; margin:0 0 var(--g) !important;}
+html[data-skin="excel"] .stat{box-sizing:border-box; height:calc(var(--g)*2); padding:0 !important; margin:0 !important; border:none !important; box-shadow:inset 0 0 0 1px #BFBFBF !important; overflow:hidden; display:block;}
+html[data-skin="excel"] .stat .label{height:var(--g); line-height:var(--g); margin:0 !important; padding:0 10px !important; border-bottom:none !important; background:#F2F2F2; font-size:11.5px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;}
+html[data-skin="excel"] .stat .value{height:var(--g); line-height:var(--g); padding:0 10px; font-size:15px; overflow:hidden; white-space:nowrap;}
+html[data-skin="excel"] .ownerYearWrap, html[data-skin="excel"] .hero-net, html[data-skin="excel"] .barwrap, html[data-skin="excel"] .od-cat, html[data-skin="excel"] .tablewrap{box-sizing:border-box; border:none !important; box-shadow:inset 0 0 0 1px #BFBFBF !important; padding:0 12px var(--g) !important; margin:0 0 var(--g) !important;}
+html[data-skin="excel"] .tablewrap{padding:0 !important;}
+html[data-skin="excel"] .oy-title{height:var(--g); line-height:var(--g); margin:0 !important; display:flex; align-items:center;}
+html[data-skin="excel"] .oy-sub{line-height:var(--g);}
+html[data-skin="excel"] .oy-scroll{margin:0 !important;}
+html[data-skin="excel"] table{border-collapse:collapse; border-spacing:0;}
+html[data-skin="excel"] thead th, html[data-skin="excel"] .oy-table th, html[data-skin="excel"] .oy-table-split thead tr:first-child th, html[data-skin="excel"] .oy-table-split thead tr:last-child th, html[data-skin="excel"] tbody td, html[data-skin="excel"] .oy-table td, html[data-skin="excel"] .oy-table-split td{height:var(--g); padding:0 8px !important; line-height:calc(var(--g) - 2px); box-sizing:border-box;}
+html[data-skin="excel"] .oy-table-split th[rowspan]{vertical-align:middle !important;}
+html[data-skin="excel"] .oy-table .badge, html[data-skin="excel"] td .badge, html[data-skin="excel"] td .tag{line-height:1.4;}
+html[data-skin="excel"] .statusTabs{margin:0 0 var(--g) !important; gap:0 !important; border:none !important;}
+html[data-skin="excel"] .stat{position:relative; box-shadow:none !important;}
+html[data-skin="excel"] .stat::before, html[data-skin="excel"] .stat::after{display:none !important;}
+html[data-skin="excel"] .stat .value::after{content:''; position:absolute; left:0; top:0; right:0; bottom:0; box-shadow:inset 0 0 0 1px #BFBFBF; pointer-events:none;}
+html[data-skin="excel"] #statBar:not([style*="none"]){gap:0 !important; margin-bottom:var(--g) !important;}
+html[data-skin="excel"] #statBar .stat{padding:0 !important; border-radius:0 !important; height:calc(var(--g)*2) !important;}
+html[data-skin="excel"] #statBar .stat .label{height:var(--g); line-height:var(--g) !important; margin:0 !important; padding:0 10px !important; font-size:11px !important; border-radius:0 !important;}
+html[data-skin="excel"] #statBar .stat .value{height:var(--g); line-height:var(--g) !important; padding:0 10px !important; font-size:14px !important;}
+@media(max-width:640px){
+  html[data-skin="excel"] .topbar{height:calc(var(--g)*3); flex-wrap:wrap; align-content:flex-start; align-items:flex-start; margin-bottom:var(--g) !important;}
+  html[data-skin="excel"] .topbar{gap:0 !important;}
+  html[data-skin="excel"] #statBar .stat .label, html[data-skin="excel"] .stat .label{margin:0 !important; padding:0 10px !important; border-radius:0 !important; background:#F2F2F2 !important; font-size:11px;}
+  html[data-skin="excel"] #statBar .stat .value{padding:0 10px !important; font-size:14px !important;}
+  html[data-skin="excel"] .hero{height:var(--g); width:100%;}
+  html[data-skin="excel"] .topbar > div:last-child{width:100%; flex-wrap:wrap; gap:0 6px !important; align-items:flex-start !important;}
+  html[data-skin="excel"] .topbar .viewswitch{height:var(--g); flex:1 1 100% !important;}
+  html[data-skin="excel"] .topbar .viewswitch .btn{flex:1 1 0; height:var(--g); padding:0 !important;}
+  html[data-skin="excel"] #designSelect, html[data-skin="excel"] #fontSelect{height:var(--g) !important;}
+  html[data-skin="excel"] .stat .value{font-size:14px;}
+}
 </style>
 </head>
 <body>
