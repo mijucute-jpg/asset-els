@@ -8,7 +8,7 @@
 <link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-<script>(function(){try{var f=localStorage.getItem('els_font'); if(f) document.documentElement.setAttribute('data-font',f);}catch(e){} var d='modern'; try{d=localStorage.getItem('els_design')||'modern';}catch(e){} document.documentElement.setAttribute('data-design',d);})();</script>
+<script>(function(){try{var f=localStorage.getItem('els_font'); if(f) document.documentElement.setAttribute('data-font',f);}catch(e){} var d='modern'; try{d=localStorage.getItem('els_design')||'modern';}catch(e){} var H=document.documentElement; if(['paper'].indexOf(d)>=0){H.setAttribute('data-skin',d); H.setAttribute('data-design','modern');} else H.setAttribute('data-design',d);})();</script>
 <script>(function(){try{if(localStorage.getItem('els_theme')==='dark') document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <style>
 
@@ -746,10 +746,35 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
   .topbar > div:last-child{display:flex !important; flex-wrap:wrap !important; gap:8px !important; align-items:center;}
   .topbar .viewswitch{flex:1 1 100% !important; width:100% !important; order:1;}
   .topbar .viewswitch .btn{flex:1 1 0; text-align:center;}
-  #designSelect{flex:1 1 100% !important; order:2; margin-bottom:0 !important;}
+  #designSelect{flex:1 1 0 !important; order:2; margin-bottom:0 !important; min-width:0;}
   #fontSelect{flex:1 1 0 !important; order:3; margin-bottom:0 !important; min-width:0;}
   #themeToggle{order:4; flex:0 0 auto;}
 }
+
+
+/* ===== 추가 디자인: 신문 ===== */
+/* --- 신문: 명조 글꼴, 이중 괘선, 박스 없는 편집 레이아웃 --- */
+html[data-skin="paper"]:not([data-theme="dark"]){--paper:#F5EFE0; --card:#F5EFE0; --card-strong:#F5EFE0; --card-row:#F5EFE0; --ink:#1B1A17; --ink-soft:#47433A; --ink-faint:#857E6C; --line:#CDC3A8; --line-soft:#E3DAC2; --teal:#1F5C44; --oy-head-bg:#EDE5CF; --oy-head-bg2:#F0E9D6; --chip-flat-bg:#EAE2CC; --btn-primary-bg:#1B1A17; --btn-primary-fg:#F5EFE0; --shadow:none;}
+html[data-skin="paper"] body, html[data-skin="paper"] button, html[data-skin="paper"] input, html[data-skin="paper"] select, html[data-skin="paper"] textarea, html[data-skin="paper"] th, html[data-skin="paper"] td{font-family:'MaruBuri','Nanum Myeongjo','Noto Serif KR','Batang','Times New Roman',serif !important;}
+html[data-skin="paper"] .topbar{border-top:4px double var(--ink); border-bottom:1px solid var(--ink); padding:16px 0 14px; margin-bottom:22px;}
+html[data-skin="paper"] .hero h1{font-size:34px; font-weight:800; letter-spacing:-.02em; font-style:normal;}
+html[data-skin="paper"] .hero .eyebrow{font-style:italic;}
+html[data-skin="paper"] .stat, html[data-skin="paper"] .ownerYearWrap, html[data-skin="paper"] .tablewrap, html[data-skin="paper"] .toolbar, html[data-skin="paper"] .hero-net, html[data-skin="paper"] .barwrap, html[data-skin="paper"] .od-cat, html[data-skin="paper"] .m-card, html[data-skin="paper"] .m-item{background:transparent; border:none; border-top:2px solid var(--ink); border-radius:0; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none;}
+html[data-skin="paper"] .stats{gap:0; border-bottom:1px solid var(--ink);}
+html[data-skin="paper"] .stat{border-radius:0 !important; border-top:none; border-left:1px solid var(--line); padding:14px 18px;}
+html[data-skin="paper"] .stat:first-child{border-left:none; padding-left:0;}
+html[data-skin="paper"] .stat .label{font-style:italic; font-size:12px;}
+html[data-skin="paper"] .stat .value{font-weight:800; font-size:23px;}
+html[data-skin="paper"] .oy-title{font-size:17px; font-weight:800;}
+html[data-skin="paper"] .oy-title::before{display:none !important;}
+html[data-skin="paper"] .viewswitch{background:transparent; border:none; padding:0; gap:18px;}
+html[data-skin="paper"] .viewswitch .btn, html[data-skin="paper"] .viewswitch .btn.active{background:transparent !important; color:var(--ink-faint) !important; border:none !important; border-bottom:2px solid transparent !important; border-radius:0; padding:6px 2px; box-shadow:none; font-size:15px;}
+html[data-skin="paper"] .viewswitch .btn.active{color:var(--ink) !important; border-bottom-color:var(--ink) !important; font-weight:800;}
+html[data-skin="paper"] thead th{background:transparent; color:var(--ink); border-top:1px solid var(--ink); border-bottom:1px solid var(--ink); font-style:italic; font-weight:700;}
+html[data-skin="paper"] .oy-table th, html[data-skin="paper"] .oy-table-split thead tr:first-child th, html[data-skin="paper"] .oy-table-split thead tr:last-child th{background:transparent !important;}
+html[data-skin="paper"] #themeToggle, html[data-skin="paper"] #fontSelect, html[data-skin="paper"] #designSelect, html[data-skin="paper"] .btn, html[data-skin="paper"] .field input, html[data-skin="paper"] .field select, html[data-skin="paper"] .toolbar select, html[data-skin="paper"] .toolbar input[type=text]{border-radius:0; box-shadow:none; background:transparent; border:1px solid var(--ink);}
+html[data-skin="paper"] .btn-primary, html[data-skin="paper"] .btn.btn-primary{background:var(--ink); color:var(--paper);}
+html[data-skin="paper"] .modal{border-radius:0; border:2px solid var(--ink); background:var(--paper);}
 </style>
 </head>
 <body>
@@ -792,13 +817,14 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
         <option value="doc">🎨 기존</option>
         <option value="modern">🎨 모던</option>
         <option value="vivid">🎨 화려한</option>
+        <option value="paper">🎨 신문</option>
       </select>
       <select id="fontSelect" title="글꼴 선택">
-        <option value="pretendard">1. Pretendard</option>
-        <option value="plex">2. IBM Plex Sans KR</option>
-        <option value="noto">3. Noto Sans KR</option>
-        <option value="nanum">4. 나눔고딕</option>
-        <option value="maruburi">5. 마루부리</option>
+        <option value="pretendard">Pretendard</option>
+        <option value="plex">IBM Plex Sans KR</option>
+        <option value="noto">Noto Sans KR</option>
+        <option value="nanum">나눔고딕</option>
+        <option value="maruburi">마루부리</option>
       </select>
       <button class="btn-icon" id="themeToggle" title="다크모드 전환">🌙</button>
     </div>
@@ -3041,9 +3067,15 @@ $('exportBtn').addEventListener('click', ()=>{
 /* ============ 디자인 선택 ============ */
 (function(){
   var sel=document.getElementById('designSelect'); if(!sel) return;
-  sel.value=document.documentElement.getAttribute('data-design')||'modern';
+  var PAL=['paper'];
+  function applyDesign(v){
+    var H=document.documentElement;
+    if(PAL.indexOf(v)>=0){ H.setAttribute('data-skin',v); H.setAttribute('data-design','modern'); }
+    else { H.removeAttribute('data-skin'); H.setAttribute('data-design',v); }
+  }
+  sel.value=document.documentElement.getAttribute('data-skin')||document.documentElement.getAttribute('data-design')||'modern';
   sel.addEventListener('change', function(){
-    document.documentElement.setAttribute('data-design',sel.value);
+    applyDesign(sel.value);
     try{ localStorage.setItem('els_design',sel.value); }catch(e){}
     requestAnimationFrame(function(){ if(typeof sendPensionSkin==='function') sendPensionSkin(); });
     if(typeof currentView!=='undefined'){ if(currentView==='els') render(); if(currentView==='overall') renderOverallView(); }
