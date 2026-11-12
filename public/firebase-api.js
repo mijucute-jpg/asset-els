@@ -31,14 +31,14 @@ try {
     const done = () => { delete window[cb]; sc.remove(); };
     const timer = setTimeout(() => { done(); reject(new Error("조회 시간 초과")); }, timeoutMs || 60000);
     window[cb] = (data) => { clearTimeout(timer); done(); resolve(data || {}); };
-    sc.onerror = () => { clearTimeout(timer); done(); reject(new Error("Apps Script 주소를 불러오지 못했습니다 (배포 권한/주소 확인)")); };
+    sc.onerror = () => { clearTimeout(timer); console.error("JSONP 실패 주소(새 탭에 붙여 넣어 응답을 확인하세요):", sc.src); done(); reject(new Error("Apps Script 주소를 불러오지 못했습니다 (배포 권한/주소 확인). 개발자도구(F12) 콘솔의 주소를 새 탭에서 열어보세요")); };
     const q = Object.keys(params).map((k) => k + "=" + encodeURIComponent(params[k])).join("&");
     sc.src = base + (base.indexOf("?") < 0 ? "?" : "&") + q + "&callback=" + cb;
     document.head.appendChild(sc);
   });
   const readAll = async (col) => (await getDocs(collection(db, col))).docs.map((d) => ({ ...d.data(), __id: d.id }));
   const watchSlim = (list) => JSON.stringify(list.map((w) => ({
-    ID: w["ID"], "단지명": w["단지명"], "법정동코드": w["법정동코드"], "전용면적": w["전용면적"], "메모": w["메모"],
+    ID: w["ID"], "단지명": w["단지명"], "법정동코드": String(w["법정동코드"] || "").slice(0, 5), "전용면적": w["전용면적"],
   })));
   const WATCH = "realestate_watch", LOANS = "loans";
 
