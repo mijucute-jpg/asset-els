@@ -445,6 +445,40 @@ h1, h2, h3, h4, .st-top h2, .st-card-h b{font-family:'NGT','NanumGothic','Malgun
 /* 작은 라벨·표 헤더: Light는 획이 가늘어 흐려 보여 Regular로 */
 @font-face{font-family:'NGR';font-weight:100 900;src:url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothic.woff') format('woff'),url('https://hangeul.pstatic.net/hangeul_static/webfont/NanumGothic/NanumGothic.ttf') format('truetype');font-display:swap}
 thead th,.st-kpi .k{font-family:'NGR','NanumGothic','Malgun Gothic',sans-serif !important;font-weight:400 !important;color:#6b6a63 !important}
+
+/* ===== 모바일 보기(폭 520px 이하) ===== */
+@media (max-width: 520px) {
+  .sheetbar { flex-direction: column; align-items: stretch; gap: 10px; }
+  .sheetbar .acts { display: flex; gap: 8px; }
+  .sheetbar .acts .btn { flex: 1; padding: 11px 8px; }
+  .vtabs { display: flex; width: 100%; }
+  .vtabs button { flex: 1; padding: 11px 6px; }
+  .st-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 16px !important; padding: 18px 0 !important; }
+  .st-kpi .v { font-size: 23px !important; }
+  .st-kpi .k { font-size: 11.5px; }
+  .st-kpi .s { font-size: 11px; line-height: 1.4; }
+  .st-top h2 { font-size: 20px; }
+  .st-ms > div { padding: 10px 12px; }
+  .st-card-h { flex-wrap: wrap; gap: 6px 10px; }
+  .st-leg { flex-wrap: wrap; gap: 4px 12px; }
+  /* 계좌별 현황: 표 → 카드 */
+  .st-tblw { overflow: visible; }
+  .st-tbl, .st-tbl tbody, .st-tbl tr, .st-tbl td { display: block; width: 100%; box-sizing: border-box; }
+  .st-tbl thead { display: none; }
+  .st-tbl tr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; padding: 14px 4px; border-bottom: 1px solid var(--line); }
+  .st-tbl tr:last-child { border-bottom: 0; }
+  .st-tbl td { border: 0 !important; padding: 0 !important; text-align: left !important; min-width: 0; }
+  .st-tbl td::before { content: attr(data-l); display: block; font-size: 10.5px; color: var(--ink-3); margin-bottom: 2px; font-weight: 500; }
+  .st-tbl td:first-child { grid-column: 1 / -1; font-size: 15px; }
+  .st-tbl td:first-child::before { display: none; }
+  .st-tbl td.pl { grid-column: 1 / -1; }
+  .st-svgw { overflow-x: visible; }
+  .st-svgw .st-svg, .st-svgw.wide .st-svg { min-width: 0 !important; width: 100%; }
+  .st-svg text { font-size: 15px; }
+  .st-tbl td.pl { order: 5; }
+  .st-tl-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .st-tl-row > b { font-size: 12px; }
+}
 </style>
 <main class="wrap">
   <div class="sheetbar" id="sheetbar">
@@ -922,6 +956,67 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var baseYear = new Date().getFullYear();
 
+
+  /* ---------- 대시보드(부모 창)의 디자인·글꼴·색을 따라가기 ---------- */
+  function applySkin(m) {
+    var root = document.documentElement, v = m.vars || {}, d = m.design || 'modern';
+    (m.links || []).forEach(function (h) {
+      if (!h || document.querySelector('link[data-skin-font="' + h + '"]')) return;
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = h; l.setAttribute('data-skin-font', h); document.head.appendChild(l);
+    });
+    var map = { '--bg': '--paper', '--surface': '--card', '--surface-2': '--card-row', '--line': '--line', '--line-2': '--line', '--ink': '--ink', '--ink-2': '--ink-soft', '--ink-3': '--ink-faint',
+      '--accent': '--teal', '--accent-soft': '--teal-soft', '--warn': '--rose', '--warn-soft': '--rose-soft', '--amber': '--amber', '--amber-soft': '--amber-soft',
+      '--free': '--teal', '--taxed': '--indigo', '--np': '--amber', '--bal': '--plum' };
+    Object.keys(map).forEach(function (k) { if (v[map[k]]) root.style.setProperty(k, v[map[k]]); });
+    root.style.setProperty('--r', d === 'doc' ? '0px' : d === 'vivid' ? '20px' : '16px');
+    root.style.setProperty('--r-s', d === 'doc' ? '2px' : '10px');
+    var css = '';
+    if (m.font) css += 'html body, body *, button, input, select, textarea, svg text, h1, h2, h3, h4, .st-top h2, .st-card-h b, thead th, .st-kpi .k {font-family:' + m.font + ' !important;}';
+    css += 'html, body {background:transparent !important;}';
+    if (d !== 'doc') {
+      var act = d === 'vivid' ? 'linear-gradient(135deg,' + (v['--vv1'] || '#5B5BF0') + ',' + (v['--vv2'] || '#A855F7') + ')' : (v['--btn-primary-bg'] || v['--ink']);
+      var actFg = d === 'vivid' ? '#fff' : (v['--btn-primary-fg'] || '#fff');
+      var rc = d === 'vivid' ? '20px' : '18px';
+      css += [
+        '.card{background:var(--surface);border:1px solid var(--line);border-radius:' + rc + ';padding:22px 24px 18px;margin-bottom:16px;box-shadow:' + (v['--shadow'] || 'none') + ';}',
+        '.st-kpis{gap:12px;padding:0 !important;margin:0 0 16px !important;border:0 !important;}',
+        '.st-kpis .card, .st-kpis .st-kpi{padding:16px 18px;margin:0;border-radius:16px;}',
+        '.st-kpi .k{font-size:12px;font-weight:500 !important;color:var(--ink-3) !important;}',
+        '.st-kpi .v{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-top:6px;}',
+        '.st-kpi .v small{font-size:12px;}',
+        '.st-row{gap:16px;}',
+        '.st-row > .card{margin-bottom:16px;}',
+        '.st-top h2{font-size:15px;font-weight:800;}',
+        '.st-top{margin-bottom:12px;}',
+        '.st-top h2::before, .st-card-h b::before{width:4px;height:15px;border-radius:2px;background:var(--accent);}',
+        '.st-card-h b{font-size:15px;}',
+        '.sheetbar, .emb .sheetbar{background:var(--surface);border:1px solid var(--line);border-radius:' + rc + ';padding:12px 16px;margin-bottom:14px;box-shadow:' + (v['--shadow'] || 'none') + ';}',
+        '.btn{border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 16px;}',
+        '.btn:hover{border-color:var(--accent);color:var(--accent);}',
+        '.btn.save, .sheetbar .btn.save, .btn.primary, .btn.save:hover, .btn.primary:hover{background:' + act + ';border-color:transparent;color:' + actFg + ';border-radius:10px;}',
+        '.vtabs{display:inline-flex;gap:2px;background:' + (v['--chip-flat-bg'] || 'var(--surface-2)') + ';border:0 !important;border-radius:' + (d === 'vivid' ? '14px' : '12px') + ';padding:4px;margin:0 0 16px;overflow:visible;}',
+        '.vtabs button, .vtabs button:first-child{min-width:0;border:0 !important;border-radius:9px;padding:8px 18px;background:transparent;color:var(--ink-2);font-weight:600;margin:0;}',
+        '.vtabs button[aria-selected="true"]{background:' + (d === 'vivid' ? act : 'var(--surface)') + ';color:' + (d === 'vivid' ? '#fff' : 'var(--ink)') + ';font-weight:700;box-shadow:0 1px 3px rgba(16,24,40,.12);padding:8px 18px;margin:0;border-radius:9px;}',
+        '.vtabs button[aria-selected="true"]::after{display:none;}',
+        '.block, .acct{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;}',
+        '.block.amber{background:var(--amber-soft);border-color:transparent;}',
+        '.seg-ctl{border:1px solid var(--line);border-radius:10px;background:var(--surface);}',
+        '.seg-ctl button[aria-checked="true"]{background:' + act + ';color:' + actFg + ';}',
+        'input, select, textarea{border-radius:10px;}',
+        '.st-tbl th{background:' + (v['--oy-head-bg'] || 'var(--surface-2)') + ';border-bottom:1px solid var(--line) !important;color:var(--ink-3) !important;padding:10px 8px;}',
+        '.st-tbl td{border-bottom:1px solid var(--line);}',
+        '.st-ms div{border-radius:10px;}',
+        '.st-seg{border-radius:10px;}',
+        '@media (max-width:540px){.card{padding:16px 16px 12px;margin-bottom:12px;}.st-kpis .card, .st-kpis .st-kpi{padding:14px;}.sheetbar, .emb .sheetbar{padding:12px;}}'
+      ].join('\n');
+    } else {
+      css += '.st-kpi .k{color:var(--ink-3) !important;}';
+    }
+    var st = document.getElementById('skin-style');
+    if (!st) { st = document.createElement('style'); st.id = 'skin-style'; document.body.appendChild(st); }
+    st.textContent = css;
+    try { post({ type: 'height', h: Math.ceil(document.documentElement.scrollHeight) }); } catch (e) {}
+  }
   /* ---------- 대시보드(부모 창)와 주고받기: 시트 저장, 높이, 테마 ---------- */
   var EMB = document.documentElement.classList.contains('emb');
   var pend = {}, seq = 0, dirty = false;
@@ -976,6 +1071,8 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
     if (m.type === 'reply' && pend[m.id]) { var q = pend[m.id]; delete pend[m.id]; if (m.ok) q.res(m.result); else q.rej(new Error(m.error || '실패')); }
     else if (m.type === 'init') { applyInit(m.data, m.diag); }
     else if (m.type === 'theme') { document.documentElement.setAttribute('data-theme', m.theme === 'dark' ? 'dark' : 'light'); }
+
+    else if (m.type === 'skin') { applySkin(m); }
     else if (m.type === 'undo') { var u = document.querySelector('#toast [data-act="undo"]'); if (u) u.click(); }
   });
   if (EMB) {
@@ -1257,16 +1354,18 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
     if (!a.plan.length) return '인출 구간 없음';
     return a.plan.map(function (p) { return p.from + '~' + p.to + '세 ' + (a.planMode === 'pct' ? p.amt + '%' : fmt(p.amt) + '만'); }).join(' / ');
   }
+  /* 숨겨진 상태(너비 0)에서 처음 그려져도 휴대폰/PC 를 알맞게 구분하기 위해 부모 창 너비도 참고 */
+  function narrowNow() { var w = window.innerWidth; if (!w) { try { w = window.parent.innerWidth; } catch (e) { w = 1000; } } return w <= 540; }
   function stArea(R) {
-    var rows = R.rows, n = rows.length, W = 700, H = 250, L = 46, Rr = 16, T = 18, B = 28;
+    var rows = R.rows, n = rows.length, NR = narrowNow(), W = NR ? 480 : 700, H = 250, L = NR ? 58 : 46, Rr = 16, T = 18, B = 28;
     var mx = 0; rows.forEach(function (r) { if (r.bal > mx) mx = r.bal; });
     var ns = stNice(Math.max(mx, 1) * 1.08, 4);
     var X = function (i) { return n === 1 ? (L + W - Rr) / 2 : L + (W - L - Rr) * i / (n - 1); };
     var Y = function (v) { return T + (H - T - B) * (1 - v / ns.max); };
     var g = '';
     for (var v = 0; v <= ns.max + 1e-6; v += ns.step) g += '<line class="grid" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + (v ? stEok(v) : '0') + '</text>';
-    var tickEvery = n > 28 ? 5 : n > 14 ? 4 : n > 8 ? 2 : 1;
-    rows.forEach(function (r, i) { if (i % tickEvery === 0 || i === n - 1) g += '<text x="' + X(i) + '" y="' + (H - 8) + '" text-anchor="middle">' + r.year + '</text>'; });
+    var tickEvery = NR ? Math.ceil(n / 6) : (n > 28 ? 5 : n > 14 ? 4 : n > 8 ? 2 : 1);
+    rows.forEach(function (r, i) { if ((i % tickEvery === 0 && !(NR && i !== n - 1 && n - 1 - i < tickEvery * 0.7)) || i === n - 1) g += '<text x="' + X(i) + '" y="' + (H - 8) + '" text-anchor="middle">' + r.year + '</text>'; });
     var oi = [], pk = 0;
     rows.forEach(function (r, i) { if (r.over1500) oi.push(i); if (r.bal > rows[pk].bal) pk = i; });
     var line = rows.map(function (r, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(r.bal).toFixed(1); }).join(' ');
@@ -1321,20 +1420,20 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
     return '<div class="st-tl">' + html + '<div class="st-axis" style="margin-left:62px">' + ax + '</div></div>';
   }
   function stBars(R) {
-    var rows = R.rows, n = rows.length, W = 1100, H = 230, L = 44, Rr = 10, T = 26, B = 30, mx = 0;
+    var rows = R.rows, n = rows.length, NR = narrowNow(), W = NR ? 480 : 1100, H = 230, L = NR ? 54 : 44, Rr = 10, T = 26, B = 30, mx = 0;
     rows.forEach(function (r) { if (r.gross / 12 > mx) mx = r.gross / 12; });
     var ns = stNice(Math.max(mx, 1) * 1.1, 4);
     var Y = function (v) { return T + (H - T - B) * (1 - v / ns.max); }, bw = (W - L - Rr) / n, s = '';
     for (var v = 0; v <= ns.max + 1e-6; v += ns.step) s += '<line class="grid" x1="' + L + '" x2="' + (W - Rr) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text x="' + (L - 6) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + fmt(v) + '</text>';
-    var lblEvery = n > 40 ? 3 : n > 24 ? 2 : 1;
+    var lblEvery = NR ? Math.ceil(n / 7) : (n > 40 ? 3 : n > 24 ? 2 : 1);
     rows.forEach(function (r, i) {
       var x = L + i * bw + bw * .16, w = bw * .68, net = Math.max(0, r.net / 12), cut = Math.max(0, (r.tax + r.hi) / 12);
       var tip = r.year + '년 · 세전 월 ' + fmt(r.gross / 12) + '만 → 실수령 월 ' + fmt(net) + '만 (세금·건보료 ' + fmt(cut) + '만)';
       s += '<g><title>' + esc(tip) + '</title>';
       s += '<rect x="' + x.toFixed(1) + '" y="' + Y(net).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(0, Y(0) - Y(net)).toFixed(1) + '" rx="3" fill="var(--accent)"/>';
       if (cut > 0.05) s += '<rect x="' + x.toFixed(1) + '" y="' + Y(net + cut).toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + Math.max(1, Y(net) - Y(net + cut)).toFixed(1) + '" rx="3" fill="var(--warn)"/>';
-      if (net > 0 && n <= 30) s += '<text class="b" x="' + (x + w / 2).toFixed(1) + '" y="' + (Y(net + cut) - 5).toFixed(1) + '" text-anchor="middle" style="font-size:10.5px">' + fmt(net) + '</text>';
-      if (i % lblEvery === 0) s += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" style="font-size:10.5px">' + (n > 18 ? String(r.year).slice(2) : r.year) + '</text>';
+      if (net > 0 && n <= 30) s += '<text class="b" x="' + (x + w / 2).toFixed(1) + '" y="' + (Y(net + cut) - 5).toFixed(1) + '" text-anchor="middle" style="font-size:' + (NR ? 14 : 10.5) + 'px">' + fmt(net) + '</text>';
+      if (i % lblEvery === 0) s += '<text x="' + (x + w / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" style="font-size:' + (NR ? 14 : 10.5) + 'px">' + (n > 18 ? String(r.year).slice(2) : r.year) + '</text>';
       s += '</g>';
     });
     return '<svg class="st-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="연도별 월 실수령액">' + s + '</svg>';
@@ -1380,7 +1479,7 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
     var msHTML = '<div class="st-ms">' + ms.slice(0, 4).map(function (m) { return '<div class="' + m.c + '"><b>' + esc(m.t) + '</b>' + esc(m.d) + '</div>'; }).join('') + '</div>';
     var trs = accts.map(function (a, i) {
       var dp = R.per[a.owner] ? R.per[a.owner].depleted.filter(function (d) { return d.name === a.name; })[0] : null;
-      return '<tr><td><span class="st-dot" style="background:var(' + ST_COL[i % ST_COL.length] + ')"></span><b>' + esc(pname(a.owner)) + '</b> ' + esc(a.name) + '</td><td>' + stEok(a.value) + '</td><td>' + a.rate + '%</td><td>' + a.startAge + '세</td><td>' + esc(planText(a)) + '</td><td>' + (dp ? '<span class="chip bad">' + dp.age + '세</span>' : '없음') + '</td></tr>';
+      return '<tr><td data-l="계좌"><span class="st-dot" style="background:var(' + ST_COL[i % ST_COL.length] + ')"></span><b>' + esc(pname(a.owner)) + '</b> ' + esc(a.name) + '</td><td data-l="평가액">' + stEok(a.value) + '</td><td data-l="수익률">' + a.rate + '%</td><td data-l="수령 시작">' + a.startAge + '세</td><td data-l="인출 계획" class="pl">' + esc(planText(a)) + '</td><td data-l="소진 시점">' + (dp ? '<span class="chip bad">' + dp.age + '세</span>' : '없음') + '</td></tr>';
     }).join('');
     el.innerHTML =
       '<div class="st-top"><div><h2>연금 현황</h2><p>' + esc(who) + ' · ' + esc(basis) + '</p></div></div>' + kpis +

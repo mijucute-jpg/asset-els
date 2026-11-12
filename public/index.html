@@ -741,6 +741,15 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
 }
 .m-row span{white-space:nowrap;} .m-row b{white-space:nowrap; letter-spacing:-.02em;}
 @media(max-width:380px){ .m-row{font-size:12px;} .m-row b{font-size:12.5px;} .m-card{padding:14px 12px;} }
+@media(max-width:640px){
+  /* 탭 선택은 윗줄 전체 폭, 디자인 관련(디자인·글꼴·다크모드)은 그 아래 두 줄 */
+  .topbar > div:last-child{display:flex !important; flex-wrap:wrap !important; gap:8px !important; align-items:center;}
+  .topbar .viewswitch{flex:1 1 100% !important; width:100% !important; order:1;}
+  .topbar .viewswitch .btn{flex:1 1 0; text-align:center;}
+  #designSelect{flex:1 1 100% !important; order:2; margin-bottom:0 !important;}
+  #fontSelect{flex:1 1 0 !important; order:3; margin-bottom:0 !important; min-width:0;}
+  #themeToggle{order:4; flex:0 0 auto;}
+}
 </style>
 </head>
 <body>
@@ -3036,6 +3045,7 @@ $('exportBtn').addEventListener('click', ()=>{
   sel.addEventListener('change', function(){
     document.documentElement.setAttribute('data-design',sel.value);
     try{ localStorage.setItem('els_design',sel.value); }catch(e){}
+    requestAnimationFrame(function(){ if(typeof sendPensionSkin==='function') sendPensionSkin(); });
     if(typeof currentView!=='undefined'){ if(currentView==='els') render(); if(currentView==='overall') renderOverallView(); }
   });
 })();
@@ -3049,6 +3059,7 @@ $('exportBtn').addEventListener('click', ()=>{
   sel.addEventListener('change', function(){
     document.documentElement.setAttribute('data-font',sel.value);
     try{ localStorage.setItem('els_font',sel.value); }catch(e){}
+    requestAnimationFrame(function(){ if(typeof sendPensionSkin==='function') sendPensionSkin(); });
   });
 })();
 
@@ -3064,7 +3075,7 @@ $('themeToggle').addEventListener('click', ()=>{
   setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
   if(currentView==='els') render(); // 그래프/차트 색상을 새 테마에 맞게 다시 그림
   if(currentView==='overall') renderOverallView(); // 종합 탭의 도넛 색상도 새 테마에 맞게 다시 그림
-  sendPensionTheme();
+  sendPensionTheme(); requestAnimationFrame(function(){ sendPensionSkin(); });
 });
 setTheme(currentTheme()); // <head>의 인라인 스크립트가 이미 적용해둔 테마에 맞춰 아이콘만 동기화
 
@@ -3075,6 +3086,17 @@ function pensionFrameWin(){ const f = $('pensionFrame'); return f ? f.contentWin
 function sendPensionTheme(){
   const w = pensionFrameWin();
   if(w && pensionLoaded) w.postMessage({src:'dash', type:'theme', theme: currentTheme()}, '*');
+}
+// 연금 화면이 다른 탭과 같은 디자인·글꼴·색을 쓰도록 현재 값을 보내 줍니다
+function sendPensionSkin(){
+  const w = pensionFrameWin();
+  if(!w || !pensionLoaded) return;
+  const cs = getComputedStyle(document.documentElement);
+  const names = ['--paper','--card','--card-row','--ink','--ink-soft','--ink-faint','--line','--line-soft','--teal','--teal-soft','--amber','--amber-soft','--rose','--rose-soft','--indigo','--plum','--shadow','--chip-flat-bg','--oy-head-bg','--btn-primary-bg','--btn-primary-fg','--vv1','--vv2','--vv3'];
+  const vars = {}; names.forEach(n=>{ vars[n] = cs.getPropertyValue(n).trim(); });
+  w.postMessage({src:'dash', type:'skin', design: document.documentElement.getAttribute('data-design')||'modern',
+    font: getComputedStyle(document.body).fontFamily, vars,
+    links: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l=>l.href)}, '*');
 }
 function showPensionError(msg){
   const m = $('pensionMsg');
@@ -3131,7 +3153,7 @@ window.addEventListener('message', async (e)=>{
   if(m.type === 'ready'){
     pensionLoaded = true; clearTimeout(pensionReadyTimer);
     $('pensionMsg').style.display = 'none'; frame.style.display = 'block';
-    sendPensionTheme();
+    sendPensionTheme(); sendPensionSkin();
     if(pensionPayload) frame.contentWindow.postMessage({src:'dash', type:'init', data: pensionPayload.data, diag: pensionPayload.diag}, '*');
   }else if(m.type === 'height'){
     const h = Math.max(400, Math.min(20000, Number(m.h) || 0));
