@@ -798,6 +798,22 @@ html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
   html[data-design="doc"] .viewswitch .btn.active::after{bottom:-1px; height:3px;}
   html[data-design="doc"] #designSelect, html[data-design="doc"] #fontSelect, html[data-design="doc"] #themeToggle{margin-bottom:0 !important;}
 }
+
+/* ===== 부동산 도구줄: 버튼 크기·높이 통일 ===== */
+.re-toolbar{display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;}
+.re-toolbar .btn, .re-toolbar .pill-btn{height:34px; padding:0 14px; font-size:12.5px; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center; line-height:1;}
+.re-toolbar .pillgroup{display:inline-flex; align-items:center; height:auto;}
+#reLiveStatus{font-size:12px; color:var(--ink-soft); margin-right:auto;}
+@media(max-width:640px){
+  .re-toolbar{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .re-toolbar .pillgroup{grid-column:1 / -1; display:flex;}
+  .re-toolbar .pillgroup .pill-btn{flex:1;}
+  #reLiveStatus{grid-column:1 / -1; margin:0;}
+  .re-toolbar .btn{width:100%; padding:0 6px;}
+}
+/* ===== 연금 탭 위쪽 CSV 줄: 작게 ===== */
+.pen-csvrow{display:flex; justify-content:flex-end; margin-bottom:4px;}
+.pen-csvrow .btn{padding:4px 12px; font-size:12px; line-height:1.3;}
 </style>
 </head>
 <body>
@@ -955,16 +971,16 @@ html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
 
   <div id="realEstateView" style="display:none;">
     <div class="stats" id="realEstateStatBar"></div>
-    <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-bottom:10px;">
+    <div class="re-toolbar">
       <div class="pillgroup" id="realEstateUnitToggle">
         <button class="pill-btn active" data-unit="won">원단위</button>
         <button class="pill-btn" data-unit="man">만원단위</button>
       </div>
-      <button class="btn btn-ghost" id="realEstateForce3Btn" title="캐시를 무시하고 최근 3개월치를 전부 다시 받아옵니다">최근 3개월 강제새로고침</button>
-      <button class="btn btn-ghost" id="realEstateForce6Btn" title="캐시를 무시하고 최근 6개월치를 전부 다시 받아옵니다">최근 6개월 강제새로고침</button>
+      <span id="reLiveStatus" style="display:none;"></span>
       <button class="btn btn-ghost" id="watchManageBtn">관심단지 관리</button>
-      <span id="reLiveStatus" style="display:none; font-size:12px; color:var(--ink-soft);"></span>
-      <button class="btn btn-ghost" id="realEstateRefreshBtn">↻ 실거래가 새로고침</button>
+      <button class="btn btn-ghost" id="realEstateForce3Btn" title="캐시를 무시하고 최근 3개월치를 전부 다시 받아옵니다">3개월 재조회</button>
+      <button class="btn btn-ghost" id="realEstateForce6Btn" title="캐시를 무시하고 최근 6개월치를 전부 다시 받아옵니다">6개월 재조회</button>
+      <button class="btn btn-ghost" id="realEstateRefreshBtn" title="실거래가 새로고침">↻ 새로고침</button>
     </div>
     <div class="ownerYearWrap">
       <div class="oy-title">관심단지<span class="oy-sub oy-desc">"관심단지 관리" 버튼에서 단지를 등록/수정하세요</span></div>
@@ -983,15 +999,15 @@ html[data-design="doc"] .viewswitch .btn.active::after{bottom:-2px; height:4px;}
       <div id="realEstateTradeGroups"></div>
       <div class="empty" id="realEstateTradeEmpty" style="display:none;">
         <b>최근 실거래 내역이 없습니다</b>
-        <span>"↻ 실거래가 새로고침"을 눌러 최신 데이터를 가져와보세요 (이번달·지난달 + 캐시에 쌓인 과거 데이터).</span>
+        <span>"↻ 새로고침"을 눌러 최신 데이터를 가져와보세요 (이번달·지난달 + 캐시에 쌓인 과거 데이터).</span>
       </div>
       <div class="loading-overlay" id="realEstateLoadingOverlay" style="display:none; border-radius:var(--radius);">불러오는 중...</div>
     </div>
-    <div class="footnote">관심단지 등록/수정은 구글시트 "부동산관리" 탭에서 직접 합니다(매수금액·평가액을 입력하면 차액이, 연계대출ID·전세보증금·근저당을 입력하면 부채가 계산됩니다). 부동산 탭을 열면 "실거래캐시" 시트에 쌓인 데이터만 바로 보여주며(국토부 API 호출 없음), "↻ 실거래가 새로고침"을 눌러야 이번달·지난달(최근 2개월)을 국토교통부 공공데이터에서 새로 받아와 캐시와 합쳐 보여줍니다(더 과거 데이터는 강제새로고침 버튼으로 채워넣을 수 있습니다). 신고 지연으로 실제 계약보다 1~2주 늦게 반영될 수 있습니다.</div>
+    <div class="footnote">관심단지 등록/수정은 구글시트 "부동산관리" 탭에서 직접 합니다(매수금액·평가액을 입력하면 차액이, 연계대출ID·전세보증금·근저당을 입력하면 부채가 계산됩니다). 부동산 탭을 열면 "실거래캐시" 시트에 쌓인 데이터만 바로 보여주며(국토부 API 호출 없음), "↻ 새로고침"을 눌러야 이번달·지난달(최근 2개월)을 국토교통부 공공데이터에서 새로 받아와 캐시와 합쳐 보여줍니다(더 과거 데이터는 강제새로고침 버튼으로 채워넣을 수 있습니다). 신고 지연으로 실제 계약보다 1~2주 늦게 반영될 수 있습니다.</div>
   </div>
 
   <div id="pensionView" style="display:none;">
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-bottom:10px;">
+    <div class="pen-csvrow">
       <button class="btn btn-ghost" id="pensionCsvBtn" title="시트의 연금설정·연금계좌 탭을 CSV로 내려받아 두 파일을 함께 선택하세요">시트 CSV 가져오기</button>
       <input type="file" id="pensionCsvFile" accept=".csv,text/csv" multiple style="display:none">
     </div>
