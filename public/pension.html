@@ -478,7 +478,17 @@ thead th,.st-kpi .k{font-family:'NGR','NanumGothic','Malgun Gothic',sans-serif !
   .st-tbl td.pl { order: 5; }
   .st-tl-row { grid-template-columns: 40px minmax(0, 1fr); }
   .st-tl-row > b { font-size: 12px; }
+  .st-tl-track, .st-seg { height: 40px; }
+  .st-seg { flex-direction: column; font-size: 10.5px; line-height: 1.2; padding: 0 3px; text-align: center; }
+  .st-seg .lb { display: block; font-weight: 600; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .st-seg .lb::before { content: none !important; }
+  .st-tbl tr { padding: 14px 14px; }
 }
+/* 계좌별 현황 여백 */
+.st-seg .lb::before { content: ' · '; white-space: pre; }
+.st-tbl th, .st-tbl td { padding-left: 14px; padding-right: 14px; }
+.st-tbl th:first-child, .st-tbl td:first-child { padding-left: 16px; }
+.st-tbl td { padding-top: 12px; padding-bottom: 12px; }
 </style>
 <main class="wrap">
   <div class="sheetbar" id="sheetbar">
@@ -1422,7 +1432,7 @@ if (typeof module !== 'undefined') module.exports = { toReal: toReal, simulate: 
       });
       var bar = segs.map(function (s) {
         var left = (s.from - y0) / N * 100, w = (s.to - s.from + 1) / N * 100;
-        return '<div class="st-seg ' + s.cls + '" style="left:' + left.toFixed(2) + '%;width:' + w.toFixed(2) + '%" title="' + s.from + '~' + s.to + '년 (' + s.ageFrom + '~' + s.ageTo + '세) ' + esc(s.label) + '">' + s.ageFrom + '~' + s.ageTo + '세 · ' + esc(s.label) + '</div>';
+        return '<div class="st-seg ' + s.cls + '" style="left:' + left.toFixed(2) + '%;width:' + w.toFixed(2) + '%" title="' + s.from + '~' + s.to + '년 (' + s.ageFrom + '~' + s.ageTo + '세) ' + esc(s.label) + '">' + s.ageFrom + '~' + s.ageTo + '세<span class="lb">' + esc(s.label) + '</span></div>';
       }).join('');
       html += '<div class="st-tl-row"><b>' + esc(p.name) + '</b><div class="st-tl-track">' + (bar || '<span class="note">수령 없음</span>') + '</div></div>';
     });
