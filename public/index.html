@@ -739,6 +739,8 @@ h1, h2, h3, h4, .hero h1, .oy-title, #modalTitle{font-family:var(--ff-t) !import
   #statBar .stat .label{font-size:10.5px !important; line-height:1.25; margin-bottom:5px; word-break:keep-all;}
   #statBar .stat .value{font-size:14.5px !important; letter-spacing:-.03em; white-space:nowrap;}
 }
+.m-row span{white-space:nowrap;} .m-row b{white-space:nowrap; letter-spacing:-.02em;}
+@media(max-width:380px){ .m-row{font-size:12px;} .m-row b{font-size:12.5px;} .m-card{padding:14px 12px;} }
 </style>
 </head>
 <body>
@@ -2776,7 +2778,7 @@ function renderMobile(){
     </div>
     ${months.length ? `<div class="m-card">
       <div class="m-sec-title">다가오는 상환</div>
-      ${months.map(m=>`<div class="m-row"><span>${m.replace('-','년 ')}월</span><b class="num">${fmt(byMonth[m])}</b></div>`).join('')}
+      ${months.map(m=>`<div class="m-row"><span style="white-space:nowrap">${m.slice(2,4)}년 ${Number(m.slice(5,7))}월</span><b class="num">${fmt(byMonth[m])}</b></div>`).join('')}
     </div>` : ''}`;
 
   // 내역: 상환일 가까운 순 카드
