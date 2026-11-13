@@ -932,7 +932,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
 .fl .field input, .fl .field select{height:36px;}
 .fl .field{flex:0 0 auto; max-width:100%;}
 .fl .field input, .fl .field select{width:100%; box-sizing:border-box;}
-.fw-xs{width:92px;} .fw-s{width:112px;} .fw-m{width:150px;} .fw-l{width:160px;} .fw-xl{width:236px;} .fw-a{width:75px;} .fw-b{width:78px;} .fw-c{width:64px;} .fw-d{width:90px;} .fw-e{width:68px;} .fw-cy{width:84px;} .fw-dt{width:152px;} .fw-kn{width:68px;}
+.fw-xs{width:92px;} .fw-s{width:112px;} .fw-m{width:150px;} .fw-l{width:160px;} .fw-xl{width:236px;} .fw-a{width:116px;} .fw-b{width:60px;} .fw-am{width:105px;} .fw-rt{width:78px;} .fw-c{width:64px;} .fw-d{width:90px;} .fw-e{width:68px;} .fw-cy{width:84px;} .fw-dt{width:152px;} .fw-kn{width:68px;}
 .fl .fw-c select, .fl .fw-d select, .fl .fw-e select, .fl .fw-cy select{padding-left:8px; padding-right:2px; background-position:right 3px center; background-size:12px;}
 .fl .fw-a input, .fl .fw-b input{padding-left:8px; padding-right:4px;} .fw-full{width:100%; flex:1 1 100% !important;}
 @media (max-width:640px){ .fw-xl{width:100%;} .fl .fw-xs, .fl .fw-s, .fl .fw-m, .fl .fw-l{width:calc(50% - 6px);} }
@@ -1267,9 +1267,9 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
         <div class="field fw-e"><label>자금출처</label><select id="f_fundsource"><option value="자산">자산</option><option value="대출">대출</option></select></div>
       </div>
       <div class="fl">
-        <div class="field fw-m"><label>투자금 (원)</label><input type="text" inputmode="numeric" id="f_amount" placeholder="20,000,000"></div>
+        <div class="field fw-am"><label>투자금 (원)</label><input type="text" inputmode="numeric" id="f_amount" placeholder="20,000,000"></div>
         <div class="field fw-l"><label>최초기준일</label><input type="date" id="f_basedate"></div>
-        <div class="field fw-s"><label>수익률 (연, %)</label><input type="number" step="0.001" id="f_rate" placeholder="17.52"></div>
+        <div class="field fw-rt"><label>수익률 (연, %)</label><input type="number" step="0.001" id="f_rate" placeholder="17.52"></div>
         <div class="field fw-s" id="loanRateField" style="display:none;"><label>대출 이율 (연, %)</label><input type="number" step="0.01" id="f_loanrate" placeholder="4.50"></div>
       </div>
 
