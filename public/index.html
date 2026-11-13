@@ -107,7 +107,6 @@ html .donut .dlabel.in{transform:translate(-50%,-50%); color:#fff; font-weight:7
 html .donut .dlabel.out{font-weight:600;}
 html .donut .dlabel .dpct{font-weight:400; color:var(--ink-soft,#555);}
 .donut .dtick{position:absolute; width:1.5px; height:8px; z-index:2; border-radius:1px;}
-.od-pie .donut::after{display:none !important;}
 .donutcol{padding:30px 84px;}
 .donut::after{content:''; position:absolute; inset:29px; background:var(--card); border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,.08);}
 .od-legend{display:flex; flex-direction:column; gap:12px; flex:1; padding:4px 0 4px 14px; border-left:1px solid var(--line); min-width:0;}
@@ -1140,10 +1139,6 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
         <button class="pill-btn active" data-unit="won">원단위</button>
         <button class="pill-btn" data-unit="man">만원단위</button>
       </div>
-      <div class="pillgroup" id="odShapeToggle">
-        <button class="pill-btn" data-shape="pie">원형</button>
-        <button class="pill-btn active" data-shape="donut">도넛</button>
-      </div>
     </div>
     <div class="hero-net">
       <div>
@@ -1808,13 +1803,6 @@ document.querySelectorAll('#odElsModeToggle .pill-btn').forEach(b=>{
 document.querySelectorAll('#odUnitToggle .pill-btn').forEach(b=>{
   b.addEventListener('click', ()=>setOdUnit(b.dataset.unit));
 });
-function setOdShape(sh){
-  try{ localStorage.setItem('els_odshape', sh); }catch(e){}
-  const v=document.getElementById('overallView'); if(v) v.classList.toggle('od-pie', sh!=='donut');
-  document.querySelectorAll('#odShapeToggle .pill-btn').forEach(b=>b.classList.toggle('active', b.dataset.shape===sh));
-}
-document.querySelectorAll('#odShapeToggle .pill-btn').forEach(b=>{ b.addEventListener('click', ()=>setOdShape(b.dataset.shape)); });
-(function(){ let sh='donut'; try{ sh=localStorage.getItem('els_odshape')||'donut'; }catch(e){} setOdShape(sh); })();
 function renderRealEstateView(){
   // 단지(watchId)별로 그룹핑, 관심단지 등록 순서대로 표시 (trades는 서버에서 최신순 정렬되어 옴)
   const groups = new Map();
