@@ -1254,21 +1254,22 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
       <div class="fieldset-title">기본 정보</div>
       <div class="fl">
         <div class="field fw-m"><label>증권사</label><input list="brokerList" id="f_broker" placeholder="예: 삼성증권"></div>
+        <div class="field fw-s"><label>상품코드</label><input type="text" id="f_prodcode" placeholder="예: 31187"></div>
         <div class="field fw-xs"><label>명의</label>
           <select id="f_owner"><option value="미주">미주</option><option value="주현">주현</option><option value="미란">미란</option></select>
         </div>
         <div class="field fw-xs"><label>계좌</label>
           <select id="f_acct"><option value="ISA">ISA</option><option value="일반">일반</option></select>
         </div>
-        <div class="field fw-m"><label>투자금 (원)</label><input type="text" inputmode="numeric" id="f_amount" placeholder="20,000,000"></div>
       </div>
       <div class="fl">
+        <div class="field fw-m"><label>투자금 (원)</label><input type="text" inputmode="numeric" id="f_amount" placeholder="20,000,000"></div>
         <div class="field fw-l"><label>최초기준일</label><input type="date" id="f_basedate"></div>
         <div class="field fw-s"><label>수익률 (연, %)</label><input type="number" step="0.001" id="f_rate" placeholder="17.52"></div>
         <div class="field fw-s"><label>상환주기</label><select id="f_cycle"><option value="3">3개월</option><option value="6">6개월</option></select></div>
-        <div class="field fw-l"><label>조기상환일</label><input type="date" id="f_redeemdate"></div>
       </div>
       <div class="fl">
+        <div class="field fw-l"><label>조기상환일</label><input type="date" id="f_redeemdate"></div>
         <div class="field fw-m"><label>상태</label><select id="f_status"><option value="진행중">진행중</option><option value="완료">완료(조기상환됨)</option></select></div>
         <div class="field fw-s"><label>자금출처</label><select id="f_fundsource"><option value="자산">자산</option><option value="대출">대출</option></select></div>
         <div class="field fw-s" id="loanRateField" style="display:none;"><label>대출 이율 (연, %)</label><input type="number" step="0.01" id="f_loanrate" placeholder="4.50"></div>
@@ -1288,9 +1289,6 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
         <div class="fieldset-title">조기상환 조건</div>
         <div class="fl">
           <div class="field fw-xl"><label>조기상환 배리어 (예: 85-85-85-80-75-70)</label><input type="text" id="f_condition" placeholder="85-85-85-80-75-70"></div>
-        </div>
-        <div class="fl">
-          <div class="field fw-s"><label>상품코드</label><input type="text" id="f_prodcode" placeholder="예: 31187"></div>
           <div class="field fw-xs"><label>낙인 (%)</label><input type="number" id="f_knockin" placeholder="30"></div>
         </div>
         <div class="fieldset-title">기초자산 1</div>
