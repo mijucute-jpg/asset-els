@@ -1915,6 +1915,7 @@ async function refreshPrices(mode){
     $('priceSyncTime').textContent = priceLabel() + ' ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) +
       (missing.length ? ` (미확인: ${missing.join(', ')})` : '');
     renderTable();
+    if(currentView==='els' && typeof renderMobile==='function') renderMobile();   // 모바일 카드에도 하락률·낙인 반영
     if($('overlay').classList.contains('show')) updateAssetLive();
   }catch(e){
     $('priceSyncTime').textContent = priceLabel() + ' 조회 실패';
