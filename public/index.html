@@ -168,6 +168,7 @@ tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover td{background:var(--teal-soft);}
 tbody tr{cursor:pointer;}
 tbody tr.row-highlight td{background:var(--teal-soft); transition:background 1.2s ease;}
+.m-item.row-highlight{background:var(--teal-soft); transition:background 1.2s ease;}
 
 .tag{display:inline-block; padding:2px 9px; border-radius:100px; font-size:11.5px; font-weight:600;}
 .tag-미주{background:var(--teal-soft); color:var(--teal);}
@@ -1067,7 +1068,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
       <div class="loading-overlay" id="loadingOverlay" style="display:none;">불러오는 중...</div>
     </div>
 
-    <div class="footnote">구글시트에서 직접 행을 추가/수정해도 "↻ 새로고침"을 누르면 이 화면에 반영돼요.</div>
+    <div class="footnote">행을 누르면 수정할 수 있어요. 다른 기기에서 바꾼 내용은 "↻ 새로고침"을 누르면 반영돼요.</div>
   </div>
 
   <div id="loanView" style="display:none;">
@@ -1091,7 +1092,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
         <span>위의 "대출 목록 관리" 버튼으로 추가하거나, 구글시트 CSV를 가져오세요.</span>
       </div>
     </div>
-    <div class="footnote">대출 입력은 구글시트 "대출관리" 탭에서만 가능합니다. 시트에서 수정 후 "↻ 새로고침"을 누르면 반영돼요. 연계ELS를 클릭하면 해당 ELS 항목으로 이동합니다.</div>
+    <div class="footnote">대출 추가·수정은 "대출 목록 관리" 버튼에서 합니다. 상환완료 대출은 잔액·월납부금 합계에서 제외됩니다. 연계ELS를 클릭하면 해당 ELS 항목으로 이동합니다.</div>
   </div>
 
   <div id="realEstateView" style="display:none;">
@@ -1117,7 +1118,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
       </div>
       <div class="empty" id="realEstateWatchEmpty" style="display:none;">
         <b>등록된 관심단지가 없습니다</b>
-        <span>구글시트 "부동산관리" 탭에서 단지명/법정동코드/전용면적을 입력해주세요.</span>
+        <span>"관심단지 관리" 버튼에서 단지명/법정동코드/전용면적을 입력해주세요.</span>
       </div>
     </div>
     <div style="position:relative; min-height:80px;">
@@ -1128,7 +1129,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
       </div>
       <div class="loading-overlay" id="realEstateLoadingOverlay" style="display:none; border-radius:var(--radius);">불러오는 중...</div>
     </div>
-    <div class="footnote">관심단지 등록/수정은 구글시트 "부동산관리" 탭에서 직접 합니다(매수금액·평가액을 입력하면 차액이, 연계대출ID·전세보증금·근저당을 입력하면 부채가 계산됩니다). 부동산 탭을 열면 "실거래캐시" 시트에 쌓인 데이터만 바로 보여주며(국토부 API 호출 없음), "↻ 새로고침"을 눌러야 이번달·지난달(최근 2개월)을 국토교통부 공공데이터에서 새로 받아와 캐시와 합쳐 보여줍니다(더 과거 데이터는 강제새로고침 버튼으로 채워넣을 수 있습니다). 신고 지연으로 실제 계약보다 1~2주 늦게 반영될 수 있습니다.</div>
+    <div class="footnote">관심단지 등록/수정은 "관심단지 관리" 버튼에서 합니다(매수금액·평가액을 입력하면 차액이, 연계대출ID·전세보증금·근저당을 입력하면 부채가 계산됩니다). 부동산 탭을 열면 이 기기에 저장해 둔 결과를 바로 보여주고, 뒤에서 최신 실거래를 국토교통부 공공데이터에서 새로 받아옵니다(더 과거 데이터는 강제새로고침 버튼으로 채워넣을 수 있습니다). 신고 지연으로 실제 계약보다 1~2주 늦게 반영될 수 있습니다.</div>
   </div>
 
   <div id="pensionView" style="display:none;">
@@ -1549,7 +1550,7 @@ function realEstateDebtOf(w){
   const ids = String(w['연계대출ID']||'').split(',').map(s=>s.trim()).filter(Boolean);
   let sum = 0;
   ids.forEach(id=>{
-    const l = loanEntries.find(x=>x.id===id);
+    const l = activeLoans().find(x=>x.id===id);
     if(l) sum += loanBalance(l).balance;
   });
   sum += Number(w['전세보증금'])||0;
@@ -1644,6 +1645,7 @@ function setOdElsMode(mode){
   if(currentView==='overall') renderOverallView();
 }
 function renderOverallView(){
+  const loanList = activeLoans();
   const cashSum = cashAssets.reduce((s,c)=>s+(Number(c['금액'])||0),0);
 
   // ELS: 진행중 건만 자산으로 집계
@@ -1651,7 +1653,7 @@ function renderOverallView(){
   const elsPrincipal = elsOngoing.reduce((s,e)=>s+(Number(e.amount)||0),0);
   const elsProfit = elsOngoing.reduce((s,e)=>s+(applyTax(e, expectedProfit(e))||0),0);
   const elsDates = elsOngoing.map(e=>e.redeemdate).filter(Boolean).sort();
-  const today = new Date().toISOString().slice(0,10);
+  const today = localTodayStr();
   const elsNextDate = elsDates.find(d=>d>=today) || elsDates[0] || '';
   // "ELS 자산 집계 기준" 토글: 원금만 쓸지, 진행중 건의 예상수익까지 더해서 쓸지
   const elsForAsset = elsPrincipal + (odElsMode==='withprofit' ? elsProfit : 0);
@@ -1680,17 +1682,17 @@ function renderOverallView(){
     .sort((a,b)=>b.value-a.value);
 
   // 대출 (전체)
-  const loanTotal = loanEntries.reduce((s,l)=>s+loanBalance(l).balance,0);
-  const loanMonthly = loanEntries.reduce((s,l)=>{ const mb = monthlyBreakdown(l); return s + (mb ? mb.payment : 0); },0);
-  const nextPays = loanEntries.map(l=>effectiveNextPayDate(l)).filter(Boolean).sort();
+  const loanTotal = loanList.reduce((s,l)=>s+loanBalance(l).balance,0);
+  const loanMonthly = loanList.reduce((s,l)=>{ const mb = monthlyBreakdown(l); return s + (mb ? mb.payment : 0); },0);
+  const nextPays = loanList.map(l=>effectiveNextPayDate(l)).filter(Boolean).sort();
   const loanNextPay = nextPays[0] || '';
-  const balances = loanEntries.map(l=>loanBalance(l).balance);
+  const balances = loanList.map(l=>loanBalance(l).balance);
   const balanceSum = balances.reduce((s,b)=>s+b,0);
-  const avgRate = balanceSum>0 ? loanEntries.reduce((s,l,i)=>s+(Number(l.rate)||0)*balances[i],0)/balanceSum : 0;
+  const avgRate = balanceSum>0 ? loanList.reduce((s,l,i)=>s+(Number(l.rate)||0)*balances[i],0)/balanceSum : 0;
 
   // 부채 용도별 분류 (대출관리 시트의 "용도" 컬럼 기준) + 부동산관리 시트의 전세보증금/근저당
   const debtByPurpose = {};
-  loanEntries.forEach((l,i)=>{
+  loanList.forEach((l,i)=>{
     const key = l.purpose || '기타';
     debtByPurpose[key] = (debtByPurpose[key]||0) + balances[i];
   });
@@ -1703,7 +1705,7 @@ function renderOverallView(){
 
   // 대출 구성 (대출 항목별 — 금융기관 기준)
   const loanByOrg = {};
-  loanEntries.forEach((l,i)=>{
+  loanList.forEach((l,i)=>{
     const key = l.org || '기타';
     loanByOrg[key] = (loanByOrg[key]||0) + balances[i];
   });
@@ -1751,7 +1753,7 @@ function renderOverallView(){
   $('od_re_debt').textContent = odAmt(reDebt);
   $('od_re_net').textContent = odAmt(reNet);
 
-  $('od_loan_count').textContent = loanEntries.length + '건 보유';
+  $('od_loan_count').textContent = loanList.length + '건 보유';
   $('od_loan_total').textContent = odAmt(loanTotal);
   $('od_loan_monthly').textContent = odAmt(loanMonthly);
   $('od_loan_nextpay').textContent = loanNextPay || '-';
@@ -1765,7 +1767,7 @@ function renderOverallView(){
     const profit = applyTax(e, expectedProfit(e))||0;
     scheduleItems.push({ date: e.redeemdate, tag:'ELS 조기상환', label, amt: (profit>=0?'+':'')+odAmt(profit), cls: profit>=0?'teal':'rose' });
   });
-  loanEntries.forEach(l=>{
+  loanList.forEach(l=>{
     const label = [l.org, l.owner].filter(Boolean).join(' · ') || '대출';
     const npay = effectiveNextPayDate(l);
     if(npay){
@@ -2020,8 +2022,13 @@ function canRollback(e){
   return addMonths(e.redeemdate, -e.cycle) >= localTodayStr();
 }
 function addMonths(dateStr, n){
+  // 말일 보정: 8/31 + 6개월 = 2/28 (다음 달로 넘어가지 않게)
   const d = new Date(dateStr);
-  d.setMonth(d.getMonth() + Number(n||0));
+  const day = d.getUTCDate();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() + Number(n||0));
+  const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()+1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(day, last));
   return d.toISOString().slice(0,10);
 }
 function periodAmount(e){
@@ -2078,7 +2085,8 @@ function applyTax(e, amt){
 function loanCost(e){
   if(e.fundsource !== '대출' || !e.loanrate || !e.basedate || !e.redeemdate) return 0;
   const annual = (Number(e.amount)||0) * (Number(e.loanrate)||0) / 100;
-  const months = monthsBetween(e.basedate, e.redeemdate);
+  let months = monthsBetween(e.basedate, e.redeemdate);
+  if(e.cycle) months = Math.round(months / e.cycle) * e.cycle;   // 예상수익과 같은 회차 기준 개월수
   return annual * months / 12;
 }
 function netVsLoan(e){
@@ -2103,7 +2111,7 @@ function ddayBadge(dateStr){
 /* ============ 계산 로직 (대출관리) ============ */
 function amortAnchor_(l){
   if(l.manualBalance !== ''){
-    return { balance: l.manualBalance, fromDate: l.lastupdate || new Date().toISOString().slice(0,10) };
+    return { balance: l.manualBalance, fromDate: l.lastupdate || localTodayStr() };
   }
   return { balance: l.principal, fromDate: l.startdate };
 }
@@ -2121,7 +2129,7 @@ function monthlyBreakdown(l){
         const mr = (Number(l.rate)||0) / 100 / 12;
         const pow = Math.pow(1+mr, totalMonths);
         const payment = mr <= 0 ? anchor.balance/totalMonths : anchor.balance*mr*pow/(pow-1);
-        const elapsed = Math.max(monthsBetween(anchor.fromDate, new Date().toISOString().slice(0,10)) - 1, 0);
+        const elapsed = Math.max(monthsBetween(anchor.fromDate, localTodayStr()) - 1, 0);
         const n = Math.min(elapsed, totalMonths);
         const powN = Math.pow(1+mr, n);
         const balBefore = mr<=0 ? Math.max(anchor.balance*(1-n/totalMonths),0) : Math.max(anchor.balance*powN - payment*((powN-1)/mr), 0);
@@ -2149,8 +2157,8 @@ function paymentsPassed_(l, fromDateStr){
   let count = 0, guard = 0;
   while(d <= today && guard < 600){
     if(d > anchor) count++;
-    d = new Date(addMonths(d.toISOString().slice(0,10), l.paycycle || 1));
     guard++;
+    d = new Date(addMonths(l.nextpaydate, guard * (l.paycycle || 1)));   // 처음 날짜 기준으로 계산(말일 밀림 방지)
   }
   return count;
 }
@@ -2164,13 +2172,15 @@ function loanBalance(l){
   const balance = Math.max(anchor.balance - n * mb.principal, 0);
   return { balance, auto: (l.manualBalance === '') };
 }
+// 상환완료 대출은 잔액·월납부금·일정 집계에서 제외
+function activeLoans(){ return loanEntries.filter(l => l.status !== '상환완료'); }
 function effectiveNextPayDate(l){
   if(!l.nextpaydate) return '';
   let d = l.nextpaydate;
   let guard = 0;
   while(dday(d) !== null && dday(d) < 0 && guard < 600){
-    d = addMonths(d, l.paycycle || 1);
     guard++;
+    d = addMonths(l.nextpaydate, guard * (l.paycycle || 1));   // 처음 날짜 기준으로 계산(말일 밀림 방지)
   }
   return d;
 }
@@ -2534,20 +2544,21 @@ function renderOwnerYearSummary(){
 /* ============ 대출관리 화면 ============ */
 function renderLoanView(){
   const list = loanEntries;
-  const balances = list.map(l => loanBalance(l).balance);
+  const act = activeLoans();   // 요약 칸은 상환완료 제외
+  const balances = act.map(l => loanBalance(l).balance);
   const totalBalance = balances.reduce((s,v)=>s+v, 0);
-  const weightedSum = list.reduce((s,l,i)=>s+(Number(l.rate)||0)*balances[i], 0);
+  const weightedSum = act.reduce((s,l,i)=>s+(Number(l.rate)||0)*balances[i], 0);
   const weightedRate = totalBalance ? (weightedSum/totalBalance) : 0;
-  const nextDays = list.map(l=>dday(l.nextpaydate)).filter(d=>d!==null && d>=0);
+  const nextDays = act.map(l=>dday(effectiveNextPayDate(l))).filter(d=>d!==null && d>=0);
   const nearest = nextDays.length ? Math.min(...nextDays) : null;
 
-  const totalPayment = list.reduce((s,l)=>{ const mb=monthlyBreakdown(l); return s+(mb?mb.payment:0); },0);
-  const totalPrincipal = list.reduce((s,l)=>{ const mb=monthlyBreakdown(l); return s+(mb?mb.principal:0); },0);
-  const totalInterest = list.reduce((s,l)=>{ const mb=monthlyBreakdown(l); return s+(mb?mb.interest:0); },0);
+  const totalPayment = act.reduce((s,l)=>{ const mb=monthlyBreakdown(l); return s+(mb?mb.payment:0); },0);
+  const totalPrincipal = act.reduce((s,l)=>{ const mb=monthlyBreakdown(l); return s+(mb?mb.principal:0); },0);
+  const totalInterest = act.reduce((s,l)=>{ const mb=monthlyBreakdown(l); return s+(mb?mb.interest:0); },0);
 
   $('loanStatBar').innerHTML = `
     <div class="stat"><div class="label">총 대출잔액</div><div class="value num">${fmt(totalBalance)}</div></div>
-    <div class="stat"><div class="label">대출 건수</div><div class="value num">${list.length}건</div></div>
+    <div class="stat"><div class="label">대출 건수</div><div class="value num">${act.length}건</div></div>
     <div class="stat"><div class="label">가중평균 이율</div><div class="value num">${weightedRate.toFixed(2)}%</div></div>
     <div class="stat"><div class="label">가장 임박한 납부일</div><div class="value num ${nearest!==null && nearest<=7 ? 'rose':''}">${nearest===null?'-':'D-'+nearest}</div></div>
     <div class="stat"><div class="label">월납부금액 합계</div><div class="value num">${fmt(totalPayment)}</div></div>
@@ -2606,7 +2617,7 @@ function goToElsEntry(elsId){
   filters = {person:'', broker:'', acct:'', status:'', search:'', excludeLoan:false};
   switchView('els');
   requestAnimationFrame(()=>{
-    const row = document.querySelector(`#tbody tr[data-idx="${idx}"]`);
+    const row = Array.from(document.querySelectorAll(`#tbody tr[data-idx="${idx}"], #mList .m-item[data-idx="${idx}"]`)).find(el=>el.offsetParent!==null);
     if(row){
       row.scrollIntoView({behavior:'smooth', block:'center'});
       row.classList.add('row-highlight');
@@ -3012,7 +3023,7 @@ function renderMobile(){
     const amt = applyTax(e, isDone ? confirmedProfit(e) : expectedProfit(e));
     return `<div class="m-item" data-idx="${idx}">
       <div class="m-item-top">
-        <div class="m-date"><span class="num">${e.redeemdate||'-'}</span>${(!isDone && dday(e.redeemdate)>=0)?ddayBadge(e.redeemdate):''}</div>
+        <div class="m-date"><span class="num">${e.redeemdate||'-'}</span>${(!isDone && e.redeemdate && dday(e.redeemdate)>=0)?ddayBadge(e.redeemdate):''}</div>
         <div class="m-tags"><span class="tag tag-${e.owner}">${e.owner}</span><span class="statuspill ${isDone?'off':'on'}">${status}</span></div>
       </div>
       <div class="m-item-mid">
@@ -3188,7 +3199,7 @@ $('duplicateBtn').addEventListener('click', ()=>{
 
 $('deleteBtn').addEventListener('click', async ()=>{
   if(editingId===null) return;
-  if(confirm('이 항목을 삭제할까요? (구글시트에서도 삭제됩니다)')){
+  if(confirm('이 항목을 삭제할까요? (되돌릴 수 없습니다)')){
     try{
       await gsCall('deleteEntry', entries[editingId].id);
       closeModal();
@@ -3239,7 +3250,7 @@ $('exportBtn').addEventListener('click', ()=>{
   ws['!cols'] = header.map(()=>({wch:13}));
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'ELS데이터');
-  XLSX.writeFile(wb, `ELS포트폴리오_${new Date().toISOString().slice(0,10)}.xlsx`);
+  XLSX.writeFile(wb, `ELS포트폴리오_${localTodayStr()}.xlsx`);
 });
 
 /* ============ 디자인 선택 ============ */
