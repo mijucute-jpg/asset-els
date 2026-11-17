@@ -935,6 +935,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
 .fl .field input, .fl .field select{height:36px;}
 .fl .field{flex:0 0 auto; max-width:100%;}
 .fl .field input, .fl .field select{width:100%; box-sizing:border-box;}
+.fw-ar{width:150px;} .fw-ar label{white-space:nowrap;} .fw-ar input{background:var(--card-row,transparent); color:var(--ink-soft); cursor:default;}
 .fw-xs{width:92px;} .fw-s{width:112px;} .fw-m{width:150px;} .fw-l{width:160px;} .fw-xl{width:236px;} .fw-a{width:116px;} .fw-b{width:60px;} .fw-am{width:105px;} .fw-rt{width:78px;} .fw-c{width:64px;} .fw-d{width:90px;} .fw-e{width:68px;} .fw-cy{width:84px;} .fw-dt{width:152px;} .fw-kn{width:68px;} .fw-an{width:140px;} .fw-ap{width:128px;}
 .fl .fw-c select, .fl .fw-d select, .fl .fw-e select, .fl .fw-cy select{padding-left:8px; padding-right:2px; background-position:right 3px center; background-size:12px;}
 .fl .fw-a input, .fl .fw-b input{padding-left:8px; padding-right:4px;} .fw-full{width:100%; flex:1 1 100% !important;}
@@ -1300,6 +1301,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
           <div class="field fw-an"><label>종목명</label><input type="text" id="f_a1_name" placeholder="하이닉스"></div>
           <div class="field fw-ap"><label>최초기준가격</label><input type="text" inputmode="numeric" id="f_a1_price"></div>
           <div class="field fw-ap"><label>낙인가격</label><input type="text" inputmode="numeric" id="f_a1_knockin"></div>
+          <div class="field fw-ar"><label>조기상환가격(다음회차)</label><input type="text" id="f_a1_redeem" readonly tabindex="-1" placeholder="-"></div>
         </div>
         <div class="asset-live" id="a1_live"></div>
         <div class="fieldset-title">기초자산 2</div>
@@ -1307,6 +1309,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
           <div class="field fw-an"><label>종목명</label><input type="text" id="f_a2_name" placeholder="삼성전자"></div>
           <div class="field fw-ap"><label>최초기준가격</label><input type="text" inputmode="numeric" id="f_a2_price"></div>
           <div class="field fw-ap"><label>낙인가격</label><input type="text" inputmode="numeric" id="f_a2_knockin"></div>
+          <div class="field fw-ar"><label>조기상환가격(다음회차)</label><input type="text" id="f_a2_redeem" readonly tabindex="-1" placeholder="-"></div>
         </div>
         <div class="asset-live" id="a2_live"></div>
       </div>
@@ -3042,6 +3045,11 @@ function updateAssetLive(){
   const percent = nextBarrierPercent(tmp);
   $('a1_live').innerHTML = assetLine($('f_a1_name').value.trim(), getMoneyValue('f_a1_price'), percent);
   $('a2_live').innerHTML = assetLine($('f_a2_name').value.trim(), getMoneyValue('f_a2_price'), percent);
+  // 조기상환가격(다음회차) = 최초기준가격 × 다음 회차 배리어(%)
+  [1,2].forEach(n=>{
+    const base = getMoneyValue('f_a'+n+'_price');
+    $('f_a'+n+'_redeem').value = (percent!=null && base!=='') ? fmt(base*percent/100) + ' (' + percent + '%)' : '';
+  });
 }
 function clearForm(){
   ['f_broker','f_amount','f_basedate','f_rate','f_redeemdate','f_condition','f_prodcode',
