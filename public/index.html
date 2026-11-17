@@ -337,19 +337,17 @@ tbody tr.row-highlight td{background:var(--teal-soft); transition:background 1.2
 .ki-hit{background:var(--rose); color:#fff;}
 .ki-ratio{display:block; padding:0 0; border-radius:100px; border:1px solid currentColor; text-align:center; font-size:10.5px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.35;}
 .ap-col, .ap-line{display:none; font-variant-numeric:tabular-nums;}
-.asset-grid.av-a{grid-template-columns:62px 58px 58px 50px 46px; column-gap:4px;}
-.asset-grid.av-a .ap-col{display:block; text-align:right;}
-.asset-grid.av-a .ap-rd{color:var(--ink-faint);}
-.ap-cur{font-weight:700; color:var(--ink);}
 .ap-ok{color:var(--teal) !important;} .ap-ng{color:var(--rose) !important;}
-.ap-line{font-weight:400;} .ap-pct{display:none;} .m-assets .ap-pct{display:inline;}
-.asset-grid.av-b .ap-line{display:block; grid-column:1/-1; text-align:center; font-size:10px; color:var(--ink-faint); margin:-1px 0 3px;}
-.asset-grid.av-b .ap-line b{color:var(--ink-soft); font-weight:700;}
-.m-assets .asset-grid.av-a{grid-template-columns:1fr 60px 60px;}
-.m-assets .asset-grid .ap-col{display:none !important;}
-.m-assets .asset-grid.av-a .ap-line, .m-assets .ap-line{font-weight:400;} .ap-pct{display:none;} .m-assets .ap-pct{display:inline;}
-.asset-grid.av-b .ap-line{display:block; grid-column:1/-1; text-align:left; font-size:11px; color:var(--ink-faint); margin:0 0 4px;}
-.m-assets .ap-line b{color:var(--ink-soft); font-weight:700;}
+.ap-pct{display:none;} .m-assets .ap-pct{display:inline;}
+.asset-grid.av-b .ap-line{display:block; grid-column:1/-1; text-align:center; font-size:10px; font-weight:400; color:var(--ink-faint); margin:-1px 0 3px;}
+.ap-line b{color:var(--ink-soft); font-weight:700;}
+.m-assets .asset-grid.av-b .ap-line{text-align:left; font-size:11px; margin:0 0 4px;}
+td.assets{position:relative;}
+.ap-more{position:absolute; right:0; top:50%; transform:translateY(-50%); width:16px; height:22px; padding:0; border:0; background:transparent; color:var(--ink-faint); font-size:10px; line-height:1; cursor:pointer; font-family:inherit; border-radius:4px;}
+.ap-more:hover{color:var(--ink); background:var(--line-soft);}
+.ap-more-t{display:none;}
+.m-assets .ap-more{position:static; transform:none; display:block; width:100%; height:auto; margin-top:4px; padding:5px 0; font-size:11px; border:1px dashed var(--line); border-radius:8px;}
+.m-assets .ap-more-t{display:inline;}
 .ki-up{color:var(--teal);}
 .ki-dn{color:var(--amber);}
 .ki-dn2{color:var(--rose);}
@@ -1054,6 +1052,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
       <button class="btn-icon" id="refreshBtn" title="새로고침">↻</button>
       <button class="btn btn-ghost" id="priceRefreshBtn" title="종목 전일종가 다시 불러오기">전일종가 새로고침</button>
       <button class="btn btn-ghost" id="curPriceRefreshBtn" title="종목 현재가(네이버 시세) 다시 불러오기 · 장중엔 실시간에 가까운 값, 장마감 후엔 당일종가">현재가 새로고침</button>
+      <button class="btn btn-ghost" id="apAllBtn" title="내역의 기초자산마다 현재가(전일종가)와 다음 회차 조기상환가를 펼쳐서 보여줍니다">가격 펼치기</button>
       <button class="btn btn-ghost" id="rollbackAllBtn" title="미리 눌러둔 조기상환 이연(+)을 모두 되돌립니다. 오늘 이전 날짜로는 돌아가지 않습니다.">이연 전체 초기화</button>
       <button class="btn btn-ghost" id="exportBtn">엑셀로 내보내기</button>
       <button class="btn btn-ghost" id="csvImportBtn" title="구글시트 ELS 시트를 CSV로 내려받아 올립니다">시트 CSV 가져오기</button>
@@ -1985,13 +1984,17 @@ function knockinInfo(e, n){
   return { close, ki, est, base: baseNum>0 ? baseNum : null, room: (close-ki)/close*100, ratio: baseNum>0 ? close/baseNum*100 : null };
 }
 // 기초자산 셀 HTML 생성 - 기준가 밑으로 내려간 종목은 빨간색, 종목 옆에 낙인까지 남은 하락 여유(%)를 칩으로 표시
-let assetView = '';   // '' | 'a'(칸으로) | 'b'(둘째 줄로)
+// 기초자산 가격(현재가·다음 조기상환가) 펼침 상태: 항목별 + 전체
+const assetOpen = new Set(); let assetOpenAll = false;
 function renderAssetsCell(e){
   const items = [
     { name: e.a1_name, price: e.a1_price, n: 1 },
     { name: e.a2_name, price: e.a2_price, n: 2 }
   ].filter(a => a.name);
   if(items.length === 0) return '-';
+  const open = assetOpenAll || assetOpen.has(e.id);
+  const assetView = open ? 'b' : '';
+  const more = `<button type="button" class="ap-more${open?' open':''}" data-apmore="${e.id}" title="${open?'가격 접기':'현재가·다음 조기상환가 보기'}"><span class="ap-more-t">${open?'가격 접기':'가격 더보기'} </span>${open?'▴':'▾'}</button>`;
   return items.map(a => {
     const danger = isPriceBelowNextBarrier(e, a.name, a.price);
     const k = knockinInfo(e, a.n);
@@ -2016,7 +2019,7 @@ function renderAssetsCell(e){
       pl = `<span class="ap-line">${priceLabel()} <b class="${cls.trim()}">${curTxt}</b> · 상환가 <b>${rdTxt}</b>${bp!=null?'<span class="ap-pct"> ('+bp+'%)</span>':''}</span>`;
     }
     return `<div class="asset-multi-line asset-grid${assetView?' av-'+assetView:''}${danger ? ' asset-danger' : ''}"><span class="ki-name" title="${a.name}">${a.name}</span>${pc}${chip}${pl}</div>`;
-  }).join('');
+  }).join('') + more;
 }
 function assetLine(name, basePrice, barrierPercent){
   if(!name) return '';
@@ -3256,6 +3259,18 @@ document.querySelectorAll('#taxModeGroup .pill-btn').forEach(btn=>{
 });
 $('refreshBtn').addEventListener('click', refreshFromSheet);
 $('priceRefreshBtn').addEventListener('click', () => refreshPrices('prev'));
+// 기초자산 가격 더보기(항목별 ▾ / 전체 버튼)
+document.addEventListener('click', (ev)=>{
+  const b = ev.target.closest && ev.target.closest('.ap-more');
+  if(!b) return;
+  ev.stopPropagation(); ev.preventDefault();
+  const id = b.dataset.apmore;
+  if(assetOpenAll){ assetOpenAll = false; entries.forEach(e=>assetOpen.add(e.id)); syncApAllBtn(); }
+  if(assetOpen.has(id)) assetOpen.delete(id); else assetOpen.add(id);
+  renderTable(); renderMobile();
+}, true);
+function syncApAllBtn(){ $('apAllBtn').textContent = assetOpenAll ? '가격 접기' : '가격 펼치기'; }
+$('apAllBtn').addEventListener('click', ()=>{ assetOpenAll = !assetOpenAll; assetOpen.clear(); syncApAllBtn(); renderTable(); renderMobile(); });
 $('curPriceRefreshBtn').addEventListener('click', () => refreshPrices('cur'));
 $('elsViewBtn').addEventListener('click', ()=>switchView('els'));
 $('loanViewBtn').addEventListener('click', ()=>switchView('loan'));
