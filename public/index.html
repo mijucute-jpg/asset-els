@@ -191,8 +191,8 @@ tbody tr.row-highlight td{background:var(--teal-soft); transition:background 1.2
 .asset-live{margin:-4px 0 12px 2px; min-height:16px;}
 .asset-row{margin-bottom:5px; line-height:1.5;}
 .asset-row:last-child{margin-bottom:0;}
-.asset-name{font-weight:700; color:var(--ink); margin-right:6px;}
-.asset-price{color:var(--ink-faint); font-size:11px; font-family:'JetBrains Mono',monospace;}
+.asset-name{font-weight:700; color:var(--ink); margin-right:10px; letter-spacing:0;}
+.asset-price{color:var(--ink-faint); font-size:11px; font-weight:400; letter-spacing:0; font-family:'JetBrains Mono',monospace;}
 .statuspill{display:inline-block; padding:3px 10px; border-radius:100px; font-size:11px; font-weight:600; cursor:pointer; user-select:none;}
 .statuspill.on{background:var(--sky-soft); color:var(--sky);}
 .statuspill.off{background:var(--chip-flat-bg); color:var(--ink-faint);}
@@ -949,7 +949,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
 .fl .field{flex:0 0 auto; max-width:100%;}
 .fl .field input, .fl .field select{width:100%; box-sizing:border-box;}
 .fw-ar{width:150px;} .fw-ar label{white-space:nowrap;} .fw-ar input{background:var(--card-row,transparent); color:var(--ink-soft); cursor:default;}
-.fw-xs{width:92px;} .fw-s{width:112px;} .fw-m{width:150px;} .fw-l{width:160px;} .fw-xl{width:236px;} .fw-a{width:116px;} .fw-b{width:60px;} .fw-am{width:105px;} .fw-rt{width:78px;} .fw-c{width:64px;} .fw-d{width:90px;} .fw-e{width:68px;} .fw-cy{width:84px;} .fw-dt{width:152px;} .fw-kn{width:68px;} .fw-an{width:140px;} .fw-ap{width:128px;}
+.fw-xs{width:92px;} .fw-s{width:112px;} .fw-m{width:150px;} .fw-l{width:160px;} .fw-xl{width:236px;} .fw-a{width:116px;} .fw-b{width:60px;} .fw-am{width:105px;} .fw-rt{width:78px;} .fw-c{width:64px;} .fw-d{width:90px;} .fw-e{width:68px;} .fw-cy{width:84px;} .fw-dt{width:152px;} .fw-kn{width:68px;} .fw-an{width:112px;} .fw-ab{width:102px;} .fw-ap{width:128px;}
 .fl .fw-c select, .fl .fw-d select, .fl .fw-e select, .fl .fw-cy select{padding-left:8px; padding-right:2px; background-position:right 3px center; background-size:12px;}
 .fl .fw-a input, .fl .fw-b input{padding-left:8px; padding-right:4px;} .fw-full{width:100%; flex:1 1 100% !important;}
 @media (max-width:640px){ .fw-xl{width:100%;} .fl .fw-xs, .fl .fw-s, .fl .fw-m, .fl .fw-l{width:calc(50% - 6px);} }
@@ -1310,22 +1310,20 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
       <button type="button" class="details-toggle" id="detailsToggle">+ 기초자산 상세 입력 (선택)</button>
 
       <div id="detailFields">
-        <div class="fieldset-title">기초자산 1</div>
+        <div class="fieldset-title" id="a1_title">기초자산1</div>
         <div class="fl">
           <div class="field fw-an"><label>종목명</label><input type="text" id="f_a1_name" placeholder="하이닉스"></div>
-          <div class="field fw-ap"><label>최초기준가격</label><input type="text" inputmode="numeric" id="f_a1_price"></div>
+          <div class="field fw-ab"><label>최초기준가격</label><input type="text" inputmode="numeric" id="f_a1_price"></div>
           <div class="field fw-ap"><label>낙인가격</label><input type="text" inputmode="numeric" id="f_a1_knockin"></div>
           <div class="field fw-ar"><label>조기상환가격(다음회차)</label><input type="text" id="f_a1_redeem" readonly tabindex="-1" placeholder="-"></div>
         </div>
-        <div class="asset-live" id="a1_live"></div>
-        <div class="fieldset-title">기초자산 2</div>
+        <div class="fieldset-title" id="a2_title">기초자산2</div>
         <div class="fl">
           <div class="field fw-an"><label>종목명</label><input type="text" id="f_a2_name" placeholder="삼성전자"></div>
-          <div class="field fw-ap"><label>최초기준가격</label><input type="text" inputmode="numeric" id="f_a2_price"></div>
+          <div class="field fw-ab"><label>최초기준가격</label><input type="text" inputmode="numeric" id="f_a2_price"></div>
           <div class="field fw-ap"><label>낙인가격</label><input type="text" inputmode="numeric" id="f_a2_knockin"></div>
           <div class="field fw-ar"><label>조기상환가격(다음회차)</label><input type="text" id="f_a2_redeem" readonly tabindex="-1" placeholder="-"></div>
         </div>
-        <div class="asset-live" id="a2_live"></div>
       </div>
 
       <div class="fieldset-title">메모</div>
@@ -2022,8 +2020,8 @@ function renderAssetsCell(e){
     return `<div class="asset-multi-line asset-grid${assetView?' av-'+assetView:''}${danger ? ' asset-danger' : ''}"><span class="ki-name" title="${a.name}">${a.name}</span>${pc}${chip}${pl}</div>`;
   }).join('') + more;
 }
-function assetLine(name, basePrice, barrierPercent){
-  if(!name) return '';
+function assetLine(n, name, basePrice, barrierPercent){
+  if(!name) return '기초자산' + n;
   const live = priceCache[name];
   const parts = [];
   if(live && refPrice(live)!=null) parts.push(`${priceLabel()} ${fmt(Number(refPrice(live)))}`);
@@ -2032,10 +2030,8 @@ function assetLine(name, basePrice, barrierPercent){
     const barrierPrice = Number(basePrice) * barrierPercent / 100;
     parts.push(`다음회차(${barrierPercent}%) 기준가 ${fmt(barrierPrice)}`);
   }
-  return `<div class="asset-row">
-    <span class="asset-name">${name}</span>
-    ${parts.length ? `<span class="asset-price">${parts.join(' · ')}</span>` : ''}
-  </div>`;
+  // 예) 기초자산1 : 하이닉스   전일종가 … · 기준가격 … · 다음회차(90%) 기준가 …
+  return `기초자산${n} : <span class="asset-name">${name}</span>${parts.length ? `<span class="asset-price">${parts.join(' · ')}</span>` : ''}`;
 }
 function monthsBetween(startStr, endStr){
   const s = new Date(startStr), e = new Date(endStr);
@@ -3074,8 +3070,8 @@ function renderMobile(){
 function updateAssetLive(){
   const tmp = readForm();
   const percent = nextBarrierPercent(tmp);
-  $('a1_live').innerHTML = assetLine($('f_a1_name').value.trim(), getMoneyValue('f_a1_price'), percent);
-  $('a2_live').innerHTML = assetLine($('f_a2_name').value.trim(), getMoneyValue('f_a2_price'), percent);
+  $('a1_title').innerHTML = assetLine(1, $('f_a1_name').value.trim(), getMoneyValue('f_a1_price'), percent);
+  $('a2_title').innerHTML = assetLine(2, $('f_a2_name').value.trim(), getMoneyValue('f_a2_price'), percent);
   // 조기상환가격(다음회차) = 최초기준가격 × 다음 회차 배리어(%)
   [1,2].forEach(n=>{
     const base = getMoneyValue('f_a'+n+'_price');
