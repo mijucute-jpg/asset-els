@@ -2016,7 +2016,7 @@ function renderAssetsCell(e){
       const curTxt = cur!=null ? fmt(cur) : '-', rdTxt = rd!=null ? fmt(rd) : '-';
       const cls = (cur!=null && rd!=null) ? (cur>=rd ? ' ap-ok' : ' ap-ng') : '';
       pc = `<span class="ap-col ap-cur${cls}" title="${priceLabel()}">${curTxt}</span><span class="ap-col ap-rd" title="다음 회차 조기상환가격${bp!=null?' ('+bp+'%)':''}">${rdTxt}</span>`;
-      pl = `<span class="ap-line" title="괄호 안은 다음 회차 조기상환가격${bp!=null?' ('+bp+'%)':''}">${priceLabel()} : <b class="${cls.trim()}">${curTxt}</b> (${rdTxt})</span>`;
+      pl = `<span class="ap-line" title="${priceLabel()} 기준 · 괄호 안은 다음 회차 조기상환가격${bp!=null?' ('+bp+'%)':''}">현재가 : <b class="${cls.trim()}">${curTxt}</b> (${rdTxt})</span>`;
     }
     return `<div class="asset-multi-line asset-grid${assetView?' av-'+assetView:''}${danger ? ' asset-danger' : ''}"><span class="ki-name" title="${a.name}">${a.name}</span>${pc}${chip}${pl}</div>`;
   }).join('') + more;
