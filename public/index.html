@@ -3,6 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<script>
+/* 앱 안에서 고르는 'PC 화면 보기' (크롬 데스크톱 사이트 설정과 별개, 휴대폰에서만) */
+(function(){try{
+  if(localStorage.getItem('els_view')==='desktop' && Math.min(screen.width,screen.height)<=700){
+    document.querySelector('meta[name=viewport]').setAttribute('content','width=1280, initial-scale='+(screen.width/1280).toFixed(3)+', viewport-fit=cover');
+    document.documentElement.classList.add('force-desktop');
+    document.documentElement.style.setProperty('--vs', (1280/screen.width).toFixed(3));
+  }
+}catch(e){}})();
+</script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#12151C">
 <meta name="mobile-web-app-capable" content="yes">
@@ -628,6 +638,10 @@ html[data-design="vivid"] .stab-btn[data-status="대출"].active{color:var(--amb
   html[data-design="vivid"] .barwrap, html[data-design="vivid"] .od-cat{padding:14px;}
   html[data-design="vivid"] .od-toolbar{justify-content:center;}
 }
+#viewModeBtn{display:none;}
+@media(max-width:640px){ #viewModeBtn{display:inline-flex;} }
+.vm-float{display:none;}
+html.force-desktop .vm-float{display:block; position:fixed; z-index:10000; right:calc(14px*var(--vs,1)); bottom:calc(18px*var(--vs,1)); padding:calc(10px*var(--vs,1)) calc(16px*var(--vs,1)); font-size:calc(14px*var(--vs,1)); font-weight:700; border-radius:calc(22px*var(--vs,1)); border:0; background:var(--teal,#0f766e); color:#fff; box-shadow:0 4px 14px rgba(0,0,0,.25); font-family:inherit; cursor:pointer;}
 @media(max-width:640px){ .topbar > div:last-child{flex-wrap:wrap;} #designSelect, #fontSelect{flex:1 1 90px; min-width:0;} }
 .oy-desc, .footnote, .od-cat .row .sub{display:none !important;}
 
@@ -956,6 +970,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
 </style>
 </head>
 <body>
+<button class="vm-float" id="viewModeFloat" type="button">📱 모바일 화면</button>
 <div id="authOverlay" style="position:fixed; inset:0; background:var(--paper); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;">
   <div id="authCard" style="display:none; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:32px 28px; width:100%; max-width:340px; box-shadow:0 24px 64px rgba(18,21,28,.18);">
     <div style="font-size:17px; font-weight:700; color:var(--ink); margin-bottom:6px;">🔒 통합 자산관리</div>
@@ -1006,6 +1021,7 @@ html[data-skin="excel"][data-theme="dark"] #designSelect, html[data-skin="excel"
         <option value="maruburi">마루부리</option>
       </select>
       <button class="btn-icon" id="themeToggle" title="다크모드 전환">🌙</button>
+      <button class="btn-icon" id="viewModeBtn" title="PC 화면으로 보기">🖥️</button>
     </div>
   </div>
 
@@ -3643,6 +3659,11 @@ $('mgFile').addEventListener('change', async (ev)=>{
 });
 </script>
 <script>try{Chart.defaults.font.family="'NG','NanumGothic','Malgun Gothic',sans-serif";}catch(e){}</script>
+<script>
+function setViewMode(desktop){ try{ if(desktop) localStorage.setItem('els_view','desktop'); else localStorage.removeItem('els_view'); }catch(e){} location.reload(); }
+document.getElementById('viewModeBtn').addEventListener('click', ()=>setViewMode(true));
+document.getElementById('viewModeFloat').addEventListener('click', ()=>setViewMode(false));
+</script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 </body>
 </html>
